@@ -61,6 +61,8 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+            implementation(libs.firebase.auth)
+            implementation(libs.firebase.database)
 
             implementation(libs.paging.compose.common)
             implementation(libs.paging.common)

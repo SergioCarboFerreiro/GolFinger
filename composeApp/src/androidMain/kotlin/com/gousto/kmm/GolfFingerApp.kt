@@ -13,4 +13,13 @@ class GolfFingerApp : Application() {
             androidContext(this@GolfFingerApp)
         }
     }
+//    Guardar el contexto de GolfFingerApp como instance: es seguro porque:
+//    •	Es el contexto de la Application, que vive todo el ciclo de vida de la app.
+//    •	No causa memory leaks.
+//    •	Es exactamente lo que Firebase, Koin, WorkManager, etc. necesitan.
+
+    companion object {
+        lateinit var instance: GolfFingerApp
+            private set
+    }
 }

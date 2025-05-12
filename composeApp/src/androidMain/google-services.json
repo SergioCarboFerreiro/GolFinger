@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "731643175044",
+    "project_id": "golffinger-8492d",
+    "storage_bucket": "golffinger-8492d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731643175044:android:a965a6b0bab513c37d22d1",
+        "android_client_info": {
+          "package_name": "com.gousto.kmm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBabLvqSrlIcxtlvZ4_AR17-nccl3cd9N0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
