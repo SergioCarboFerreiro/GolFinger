@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenViewModel
+import com.gousto.kmm.presentation.screen.splashScreen.SplashScreenComposable
 
 @Composable
 fun AppRoot() {
@@ -26,9 +27,25 @@ fun AppRoot() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.LoginScreen.route,
+            startDestination = Routes.SplashScreen.route,
             modifier = Modifier.padding(padding)
         ) {
+            // 👇 Splash Screen: detecta si hay sesión activa
+            composable(Routes.SplashScreen.route) {
+                SplashScreenComposable(
+                    onUserLoggedIn = {
+                        navController.navigate(Routes.DashboardScreen.route) {
+                            popUpTo(Routes.SplashScreen.route) { inclusive = true }
+                        }
+                    },
+                    onUserNotLoggedIn = {
+                        navController.navigate(Routes.LoginScreen.route) {
+                            popUpTo(Routes.SplashScreen.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             composable(Routes.LoginScreen.route) {
                 LoginScreenComposable(
                     onLoginSuccess = {
@@ -43,7 +60,7 @@ fun AppRoot() {
                 DashboardScreenComposable()
             }
 
-            // Puedes descomentar estas cuando estén listas
+            // Estas las puedes activar cuando las crees
 //            composable(Routes.StatsScreen.route) { StatsScreenComposable() }
 //            composable(Routes.ProfileScreen.route) { ProfileScreenComposable() }
         }
