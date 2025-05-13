@@ -8,6 +8,7 @@ import org.koin.android.ext.koin.androidLogger
 class GolfFingerApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        instance = this
         initKoin {
             androidLogger()
             androidContext(this@GolfFingerApp)

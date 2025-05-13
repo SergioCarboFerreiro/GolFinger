@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.presentation.screen.login.events.UiEvent
 import com.gousto.kmm.presentation.screen.login.state.LoginScreenUiState
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,19 +28,36 @@ class LoginScreenViewModel(
     }
 
     fun onLoginClicked() {
-
         viewModelScope.launch {
             if (validateLogin()) {
-                _uiEvent.emit(UiEvent.LoginSuccess)
+                val state = _uiState.value
+                try {
+                    val authResult = Firebase.auth.signInWithEmailAndPassword(
+                        email = state.username,
+                        password = state.password
+                    )
+
+                    if (authResult.user != null) {
+                        _uiEvent.emit(UiEvent.LoginSuccess)
+                    } else {
+                        _uiEvent.emit(UiEvent.ShowError("Usuario o contraseña incorrectos."))
+                    }
+                } catch (e: Exception) {
+                    _uiEvent.emit(
+                        UiEvent.ShowError(
+                            e.message ?: "Ha ocurrido un error inesperado."
+                        )
+                    )
+                }
             } else {
-                _uiEvent.emit(UiEvent.ShowError("Introduce usuario y contraseña"))
+                _uiEvent.emit(UiEvent.ShowError("Introduce usuario y contraseña."))
             }
         }
     }
 
     private fun loadInitialState() {
-        val stateFromDecorator = loginDecorator.getInitialState()
-        _uiState.value = stateFromDecorator
+        val loginUiState = loginDecorator.getInitialState()
+        _uiState.value = loginUiState
     }
 
     fun onUsernameChanged(newUsername: String) {
@@ -49,7 +68,7 @@ class LoginScreenViewModel(
         _uiState.update { it.copy(password = newPassword) }
     }
 
-    fun validateLogin(): Boolean {
+    private fun validateLogin(): Boolean {
         val current = _uiState.value
         return current.username.isNotBlank() && current.password.isNotBlank()
     }
