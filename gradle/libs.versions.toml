@@ -97,6 +97,7 @@ compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-
 #Firebase
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-kmp" }
 firebase-database = { module = "dev.gitlive:firebase-database", version.ref = "firebase-kmp" }
+firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-kmp" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

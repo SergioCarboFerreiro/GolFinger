@@ -1,6 +1,5 @@
-package com.gousto.kmm.presentation.screen.login
+package com.gousto.kmm.presentation.screen.register
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -32,18 +29,17 @@ import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun LoginScreenComposable(
-    onLoginSuccess: () -> Unit,
-    onRegisterClicked: () -> Unit // 👈 nuevo parámetro
+fun RegisterScreenComposable(
+    onRegisterSuccess: () -> Unit
 ) {
-    val viewModel: LoginScreenViewModel = koinViewModel()
+    val viewModel: RegisterScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.event.collect { event ->
             when (event) {
-                is UiEvent.LoginSuccess -> onLoginSuccess()
+                is UiEvent.LoginSuccess -> onRegisterSuccess()
                 is UiEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
@@ -60,15 +56,32 @@ fun LoginScreenComposable(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Golf Tracker - Login", style = MaterialTheme.typography.titleLarge)
+            Text("Registro", style = MaterialTheme.typography.titleLarge)
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = uiState.username,
-                onValueChange = { viewModel.onUsernameChanged(it) },
-                label = { Text("Username") },
-                singleLine = true,
+                value = uiState.name,
+                onValueChange = viewModel::onNameChanged,
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = uiState.handicap,
+                onValueChange = viewModel::onHandicapChanged,
+                label = { Text("Handicap") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = uiState.email,
+                onValueChange = viewModel::onEmailChanged,
+                label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -76,9 +89,8 @@ fun LoginScreenComposable(
 
             OutlinedTextField(
                 value = uiState.password,
-                onValueChange = { viewModel.onPasswordChanged(it) },
-                label = { Text("Password") },
-                singleLine = true,
+                onValueChange = viewModel::onPasswordChanged,
+                label = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -86,19 +98,11 @@ fun LoginScreenComposable(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { viewModel.onLoginClicked() },
+                onClick = { viewModel.onRegisterClicked() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Login")
+                Text("Registrarse")
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "¿No tienes cuenta? Regístrate",
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onRegisterClicked() }
-            )
         }
     }
 }

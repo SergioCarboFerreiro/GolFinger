@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenViewModel
+import com.gousto.kmm.presentation.screen.register.RegisterScreenComposable
 import com.gousto.kmm.presentation.screen.splashScreen.SplashScreenComposable
 
 @Composable
@@ -52,12 +53,25 @@ fun AppRoot() {
                         navController.navigate(Routes.DashboardScreen.route) {
                             popUpTo(Routes.LoginScreen.route) { inclusive = true }
                         }
+                    },
+                    onRegisterClicked = {
+                        navController.navigate(Routes.RegisterScreen.route)
                     }
                 )
             }
 
             composable(Routes.DashboardScreen.route) {
                 DashboardScreenComposable()
+            }
+
+            composable(Routes.RegisterScreen.route) {
+                RegisterScreenComposable(
+                    onRegisterSuccess = {
+                        navController.navigate(Routes.DashboardScreen.route) {
+                            popUpTo(Routes.LoginScreen.route) { inclusive = true }
+                        }
+                    }
+                )
             }
 
             // Estas las puedes activar cuando las crees
