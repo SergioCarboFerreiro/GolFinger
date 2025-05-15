@@ -1,19 +1,22 @@
 package com.gousto.kmm.presentation.screen.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.gousto.kmm.presentation.screen.dashboard.events.DashboardUiEvent
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -21,25 +24,33 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Composable
 fun DashboardScreenComposable() {
     val viewModel: DashboardScreenViewModel = koinViewModel()
-    val name by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            if (event is DashboardUiEvent.ShowError) {
+                snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "🏌️‍♂️ ¡Bienvenido, $name!",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Aquí verás tus estadísticas, rondas recientes y mucho más.",
-            style = MaterialTheme.typography.bodyLarge
-        )
+        if (uiState.isLoading) {
+            CircularProgressIndicator()
+        } else {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    "🏌️ Bienvenido, ${uiState.name}",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Text("Aquí podrás ver tus estadísticas, rondas y más.")
+            }
+        }
     }
 }
