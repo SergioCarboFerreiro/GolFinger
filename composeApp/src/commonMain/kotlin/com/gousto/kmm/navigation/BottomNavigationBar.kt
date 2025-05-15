@@ -1,6 +1,7 @@
 package com.gousto.kmm.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,11 +20,11 @@ fun BottomNavigationBar(navController: NavHostController) {
             label = "Dashboard",
             icon = Icons.Default.Home
         ),
-//        BottomNavItem(
-//            route = Routes.Stats.route,
-//            label = "Estadísticas",
-//            icon = Icons.Default.
-//        ),
+        BottomNavItem(
+            route = Routes.ProfileScreen.route,
+            label = "Profile",
+            icon = Icons.Default.Face
+        ),
 //        BottomNavItem(
 //            route = Routes.Profile.route,
 //            label = "Perfil",
