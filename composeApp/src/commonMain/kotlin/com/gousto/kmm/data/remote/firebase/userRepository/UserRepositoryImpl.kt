@@ -9,20 +9,26 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun getCurrentUserProfile(): UserProfileModel? {
         val uid = Firebase.auth.currentUser?.uid ?: return null
 
-        return try {
-            val snapshot = Firebase.firestore
-                .collection("users")
-                .document(uid)
-                .get()
+        val snapshot = Firebase.firestore
+            .collection(USERS)
+            .document(uid)
+            .get()
 
-            val name = snapshot.get<String>("name") ?: ""
-            val handicap = snapshot.get<String>("handicap") ?: ""
+        val name = snapshot.get<String>(NAME)
+        val handicap = snapshot.get<String>(HANDICAP)
 
-            UserProfileModel(name, handicap)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+        return UserProfileModel(name, handicap)
     }
 
+    override suspend fun saveUserProfile(uid: String, name: String, handicap: String) {
+        Firebase.firestore.collection(USERS)
+            .document(uid)
+            .set(mapOf(NAME to name, HANDICAP to handicap))
+    }
+
+    companion object {
+        const val NAME = "name"
+        const val HANDICAP = "handicap"
+        const val USERS = "users"
+    }
 }
