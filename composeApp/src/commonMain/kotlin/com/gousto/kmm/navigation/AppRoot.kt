@@ -10,9 +10,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenComposable
+import com.gousto.kmm.presentation.screen.newRound.NewRoundScreenComposable
+import com.gousto.kmm.presentation.screen.newRound.courses.SelectCourseScreenComposable
 import com.gousto.kmm.presentation.screen.profile.ProfileScreenComposable
 import com.gousto.kmm.presentation.screen.register.RegisterScreenComposable
 import com.gousto.kmm.presentation.screen.splashScreen.SplashScreenComposable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun AppRoot() {
@@ -61,7 +65,11 @@ fun AppRoot() {
             }
 
             composable(Routes.DashboardScreen.route) {
-                DashboardScreenComposable()
+                DashboardScreenComposable(
+                    onNewRoundClick = {
+                        navController.navigate(Routes.NewRoundScreen.route)
+                    }
+                )
             }
 
             composable(Routes.RegisterScreen.route) {
@@ -76,6 +84,29 @@ fun AppRoot() {
 
             composable(Routes.ProfileScreen.route) {
                 ProfileScreenComposable()
+            }
+
+
+            composable(Routes.NewRoundScreen.route) {
+                NewRoundScreenComposable(
+                    navController = navController,
+                    onSelectCourseClicked = {
+                        navController.navigate(Routes.SelectCourseScreen.route)
+                    },
+                    onStartRoundClicked = {}
+                )
+            }
+
+            composable(Routes.SelectCourseScreen.route) {
+                SelectCourseScreenComposable(
+                    onCourseSelected = { selectedCourse ->
+                        val json = Json.encodeToString(selectedCourse)
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("selectedCourseJson", json)
+                        navController.popBackStack()
+                    }
+                )
             }
 
         }

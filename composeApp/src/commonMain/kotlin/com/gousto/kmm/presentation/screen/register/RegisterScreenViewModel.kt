@@ -3,12 +3,9 @@ package com.gousto.kmm.presentation.screen.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.RegisterUserUseCase
-import com.gousto.kmm.presentation.screen.login.events.UiEvent
+import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import com.gousto.kmm.presentation.screen.register.state.RegisterScreenUiState
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.firestore.firestore
 
-import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +23,7 @@ class RegisterScreenViewModel(
 //    •	🔄 El ViewModel vive mientras la pantalla esté en el back stack.
 //    •	🧹 Cuando navegas con popUpTo(..., inclusive = true), el ViewModel se destruye.
 //    •	📡 El SharedFlow muere con el ViewModel: no conserva los eventos tras destruirse.
-    private val _event = MutableSharedFlow<UiEvent>()
+    private val _event = MutableSharedFlow<LoginScreenUiEvent>()
     val event = _event.asSharedFlow()
 
     fun onRegisterClicked() {
@@ -35,12 +32,12 @@ class RegisterScreenViewModel(
         viewModelScope.launch(
             CoroutineExceptionHandler { _, error ->
                 viewModelScope.launch {
-                    _event.emit(UiEvent.ShowError(error.message ?: "Error inesperado."))
+                    _event.emit(LoginScreenUiEvent.ShowError(error.message ?: "Error inesperado."))
                 }
             }
         ) {
             if (state.name.isBlank() || state.email.isBlank() || state.password.isBlank()) {
-                _event.emit(UiEvent.ShowError("Todos los campos excepto el handicap son obligatorios."))
+                _event.emit(LoginScreenUiEvent.ShowError("Todos los campos excepto el handicap son obligatorios."))
                 return@launch
             }
 
@@ -51,7 +48,7 @@ class RegisterScreenViewModel(
                 handicap = state.handicap
             )
 
-            _event.emit(UiEvent.LoginSuccess)
+            _event.emit(LoginScreenUiEvent.LoginSuccess)
         }
     }
 

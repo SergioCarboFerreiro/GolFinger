@@ -2,7 +2,7 @@ package com.gousto.kmm.presentation.screen.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gousto.kmm.presentation.screen.login.events.UiEvent
+import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import com.gousto.kmm.presentation.screen.login.state.LoginScreenUiState
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
@@ -20,8 +20,8 @@ class LoginScreenViewModel(
     private val _uiState = MutableStateFlow(LoginScreenUiState())
     val uiState: StateFlow<LoginScreenUiState> = _uiState
 
-    private val _uiEvent = MutableSharedFlow<UiEvent>()
-    val event = _uiEvent.asSharedFlow()
+    private val _LoginScreen_uiEvent = MutableSharedFlow<LoginScreenUiEvent>()
+    val event = _LoginScreen_uiEvent.asSharedFlow()
 
     init {
         loadInitialState()
@@ -38,19 +38,19 @@ class LoginScreenViewModel(
                     )
 
                     if (authResult.user != null) {
-                        _uiEvent.emit(UiEvent.LoginSuccess)
+                        _LoginScreen_uiEvent.emit(LoginScreenUiEvent.LoginSuccess)
                     } else {
-                        _uiEvent.emit(UiEvent.ShowError("Usuario o contraseña incorrectos."))
+                        _LoginScreen_uiEvent.emit(LoginScreenUiEvent.ShowError("Usuario o contraseña incorrectos."))
                     }
                 } catch (e: Exception) {
-                    _uiEvent.emit(
-                        UiEvent.ShowError(
+                    _LoginScreen_uiEvent.emit(
+                        LoginScreenUiEvent.ShowError(
                             e.message ?: "Ha ocurrido un error inesperado."
                         )
                     )
                 }
             } else {
-                _uiEvent.emit(UiEvent.ShowError("Introduce usuario y contraseña."))
+                _LoginScreen_uiEvent.emit(LoginScreenUiEvent.ShowError("Introduce usuario y contraseña."))
             }
         }
     }

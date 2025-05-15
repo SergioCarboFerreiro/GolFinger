@@ -1,10 +1,20 @@
 package com.gousto.kmm.presentation.screen.dashboard
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -22,7 +32,9 @@ import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun DashboardScreenComposable() {
+fun DashboardScreenComposable(
+    onNewRoundClick: () -> Unit = {}
+) {
     val viewModel: DashboardScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -35,6 +47,7 @@ fun DashboardScreenComposable() {
         }
     }
 
+    // Este padding te lo pasará AppRoot si se lo das como parámetro
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,12 +57,29 @@ fun DashboardScreenComposable() {
         if (uiState.isLoading) {
             CircularProgressIndicator()
         } else {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 Text(
                     "🏌️ Bienvenido, ${uiState.name}",
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Text("Aquí podrás ver tus estadísticas, rondas y más.")
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = onNewRoundClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Crear")
+                    Spacer(Modifier.width(8.dp))
+                    Text("Crear nueva partida")
+                }
             }
         }
     }

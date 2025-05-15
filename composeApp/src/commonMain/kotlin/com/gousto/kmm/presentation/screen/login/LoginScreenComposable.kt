@@ -19,14 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.gousto.kmm.presentation.screen.login.events.UiEvent
+import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -43,8 +41,8 @@ fun LoginScreenComposable(
     LaunchedEffect(Unit) {
         viewModel.event.collect { event ->
             when (event) {
-                is UiEvent.LoginSuccess -> onLoginSuccess()
-                is UiEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is LoginScreenUiEvent.LoginSuccess -> onLoginSuccess()
+                is LoginScreenUiEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
     }

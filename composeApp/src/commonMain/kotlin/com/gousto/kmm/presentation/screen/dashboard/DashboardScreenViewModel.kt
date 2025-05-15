@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.presentation.screen.dashboard.events.DashboardUiEvent
 import com.gousto.kmm.presentation.screen.dashboard.state.DashboardUiState
-import com.gousto.kmm.presentation.screen.login.events.UiEvent
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
