@@ -10,7 +10,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenComposable
-import com.gousto.kmm.presentation.screen.login.LoginScreenViewModel
+import com.gousto.kmm.presentation.screen.profile.ProfileScreenComposable
 import com.gousto.kmm.presentation.screen.register.RegisterScreenComposable
 import com.gousto.kmm.presentation.screen.splashScreen.SplashScreenComposable
 
@@ -74,9 +74,10 @@ fun AppRoot() {
                 )
             }
 
-            // Estas las puedes activar cuando las crees
-//            composable(Routes.StatsScreen.route) { StatsScreenComposable() }
-//            composable(Routes.ProfileScreen.route) { ProfileScreenComposable() }
+            composable(Routes.ProfileScreen.route) {
+                ProfileScreenComposable()
+            }
+
         }
     }
 }
