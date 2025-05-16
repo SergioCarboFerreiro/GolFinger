@@ -3,17 +3,21 @@ package com.gousto.kmm.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.gousto.kmm.data.remote.firebase.userRepository.UserProfileModel
 import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenComposable
 import com.gousto.kmm.presentation.screen.login.LoginScreenComposable
 import com.gousto.kmm.presentation.screen.newRound.NewRoundScreenComposable
 import com.gousto.kmm.presentation.screen.newRound.courses.SelectCourseScreenComposable
+import com.gousto.kmm.presentation.screen.newRound.uiState.Course
 import com.gousto.kmm.presentation.screen.profile.ProfileScreenComposable
 import com.gousto.kmm.presentation.screen.register.RegisterScreenComposable
+import com.gousto.kmm.presentation.screen.round.RoundScreenComposable
 import com.gousto.kmm.presentation.screen.splashScreen.SplashScreenComposable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -80,14 +84,31 @@ fun AppRoot() {
                 ProfileScreenComposable()
             }
 
-
             composable(Routes.NewRoundScreen.route) {
                 NewRoundScreenComposable(
                     navController = navController,
                     onSelectCourseClicked = {
                         navController.navigate(Routes.SelectCourseScreen.route)
                     },
-                    onStartRoundClicked = {}
+                    onStartRoundClicked = {
+                        navController.navigate(Routes.RoundScreen.route)
+                    }
+                )
+            }
+
+            composable("${Routes.RoundScreen.route}/{sessionId}") { backStackEntry ->
+                val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
+
+                val courseJson = backStackEntry.savedStateHandle.get<String>("courseJson") ?: ""
+                val playersJson = backStackEntry.savedStateHandle.get<String>("playersJson") ?: ""
+
+                val course = remember { Json.decodeFromString<Course>(courseJson) }
+                val players = remember { Json.decodeFromString<List<UserProfileModel>>(playersJson) }
+
+                RoundScreenComposable(
+                    sessionId = sessionId,
+                    course = course,
+                    players = players
                 )
             }
 

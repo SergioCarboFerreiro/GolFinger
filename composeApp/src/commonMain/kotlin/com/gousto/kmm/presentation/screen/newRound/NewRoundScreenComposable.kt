@@ -17,16 +17,21 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.gousto.kmm.navigation.Routes
+import com.gousto.kmm.presentation.screen.newRound.events.NewRoundScreenUiEvent
 import com.gousto.kmm.presentation.screen.newRound.uiState.Course
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -40,7 +45,9 @@ fun NewRoundScreenComposable(
 ) {
     val viewModel: NewRoundScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    // Recoge el campo que viene desde SelectCourseScreen
     LaunchedEffect(Unit) {
         navController.currentBackStackEntry
             ?.savedStateHandle
@@ -53,6 +60,32 @@ fun NewRoundScreenComposable(
                     ?.remove<String>("selectedCourseJson")
             }
     }
+// Maneja eventos como navegación y errores
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is NewRoundScreenUiEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
+
+                is NewRoundScreenUiEvent.RoundCreated -> {
+                    val courseJson = Json.encodeToString(event.course)
+                    val playersJson = Json.encodeToString(event.players)
+
+                    // Guardamos los datos en la pantalla actual
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle?.set("courseJson", courseJson)
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle?.set("playersJson", playersJson)
+
+                    // Ahora sí navegamos
+                    navController.navigate("${Routes.RoundScreen.route}/${event.sessionId}")
+                }
+            }
+        }
+    }
+
+
     if (uiState.isLoading) {
         CircularProgressIndicator()
     } else {
@@ -96,7 +129,10 @@ fun NewRoundScreenComposable(
                         Column {
                             Text(player.name)
                             if (player.handicap.isNotBlank()) {
-                                Text("HCP: ${player.handicap}", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    "HCP: ${player.handicap}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                             }
                         }
                     }
@@ -105,8 +141,8 @@ fun NewRoundScreenComposable(
             Spacer(Modifier.weight(1f))
 
             Button(
-                onClick = onStartRoundClicked,
-                enabled = uiState.selectedCourse != null,
+                onClick = { viewModel.onStartRoundClicked() },
+                enabled = uiState.selectedCourse != null && uiState.selectedPlayers.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Comenzar partida")

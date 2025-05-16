@@ -37,6 +37,8 @@ composeWebviewMultiplatform = "1.9.20"
 
 firebase-kmp = "1.7.2"
 
+voyagerVersion = "1.1.0-beta02"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -98,6 +100,32 @@ compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-kmp" }
 firebase-database = { module = "dev.gitlive:firebase-database", version.ref = "firebase-kmp" }
 firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-kmp" }
+
+
+#// Multiplatform
+#
+#// Navigator
+#implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+#
+#// Screen Model
+#implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
+#
+#// BottomSheetNavigator
+#implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyagerVersion")
+#
+#// TabNavigator
+#implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
+#
+#// Transitions
+#implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
+#
+#// Koin integration
+#implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
+
+
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyagerVersion" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

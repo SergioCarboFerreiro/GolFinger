@@ -62,4 +62,36 @@ class NewRoundScreenViewModel(
         _event.emit(NewRoundScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
         _uiState.update { it.copy(isLoading = false) }
     }
+
+    fun onStartRoundClicked() {
+        viewModelScope.launch(
+            CoroutineExceptionHandler { _, error ->
+                viewModelScope.launch { handleError(error) }
+            }
+        ) {
+            val course = _uiState.value.selectedCourse
+            val selectedPlayers = _uiState.value.selectedPlayers
+            val selectedPlayerModels = _uiState.value.players.filter { it.id in selectedPlayers }
+
+            if (course != null && selectedPlayers.isNotEmpty()) {
+                val sessionId = generateSessionId()
+                _event.emit(
+                    NewRoundScreenUiEvent.RoundCreated(
+                        sessionId = sessionId,
+                        course = course,
+                        players = selectedPlayerModels
+                    )
+                )
+            } else {
+                _event.emit(NewRoundScreenUiEvent.ShowError("Selecciona un campo y al menos un jugador."))
+            }
+        }
+    }
+
+    private fun generateSessionId(): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return (1..4)
+            .map { chars.random() }
+            .joinToString("")
+    }
 }

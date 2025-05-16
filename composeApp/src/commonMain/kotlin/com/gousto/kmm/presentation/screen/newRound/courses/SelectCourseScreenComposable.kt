@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -18,10 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.gousto.kmm.presentation.screen.newRound.uiState.Course
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
@@ -30,7 +26,7 @@ fun SelectCourseScreenComposable(
     onCourseSelected: (Course) -> Unit
 ) {
     val courses = listOf("Domaio", "Mondariz")
-    val types = listOf("18 hoyos", "9 hoyos", "Pitch and Putt")
+    val types = listOf("18 hoyos", "9 hoyos", "Pitch and Putt(16)")
 
     var selectedCourse by remember { mutableStateOf<String?>(null) }
     var selectedType by remember { mutableStateOf<String?>(null) }

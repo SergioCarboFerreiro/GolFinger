@@ -73,6 +73,9 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
 
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.transitions)
+
             api(libs.compose.webview.multiplatform)
         }
         iosMain.dependencies {
