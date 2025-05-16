@@ -1,12 +1,20 @@
 package com.gousto.kmm.presentation.screen.newRound
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -45,40 +53,64 @@ fun NewRoundScreenComposable(
                     ?.remove<String>("selectedCourseJson")
             }
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("🏌️ Crear nueva partida", style = MaterialTheme.typography.headlineSmall)
-
-        // Campo seleccionado
-        OutlinedButton(onClick = onSelectCourseClicked) {
-            Text(
-                if (uiState.selectedCourse != null)
-                    "Campo: ${uiState.selectedCourse?.name} - ${uiState.selectedCourse?.type}"
-                else
-                    "Seleccionar campo"
-            )
-        }
-
-        // Jugadores (solo uno por ahora)
-        Text("Jugadores", style = MaterialTheme.typography.titleMedium)
-        uiState.players.forEach { player ->
-            Text("• $player")
-        }
-
-        Spacer(Modifier.weight(1f))
-
-        Button(
-            onClick = onStartRoundClicked,
-            enabled = uiState.selectedCourse != null,
-            modifier = Modifier.fillMaxWidth()
+    if (uiState.isLoading) {
+        CircularProgressIndicator()
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Comenzar partida")
+            Text("🏌️ Crear nueva partida", style = MaterialTheme.typography.headlineSmall)
+
+            OutlinedButton(onClick = onSelectCourseClicked) {
+                Text(
+                    if (uiState.selectedCourse != null)
+                        "Campo: ${uiState.selectedCourse?.name} - ${uiState.selectedCourse?.type}"
+                    else
+                        "Seleccionar campo"
+                )
+            }
+
+
+            Text("Selecciona los jugadores", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
+
+            LazyColumn {
+                items(uiState.players) { player ->
+                    val isSelected = uiState.selectedPlayers.contains(player.id) // o UID
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.togglePlayerSelection(player.id) }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = isSelected,
+                            onCheckedChange = { viewModel.togglePlayerSelection(player.id) }
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Column {
+                            Text(player.name)
+                            if (player.handicap.isNotBlank()) {
+                                Text("HCP: ${player.handicap}", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.weight(1f))
+
+            Button(
+                onClick = onStartRoundClicked,
+                enabled = uiState.selectedCourse != null,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Comenzar partida")
+            }
         }
     }
 }

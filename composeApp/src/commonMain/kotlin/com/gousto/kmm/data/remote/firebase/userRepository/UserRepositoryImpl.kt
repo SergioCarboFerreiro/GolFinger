@@ -17,18 +17,30 @@ class UserRepositoryImpl : UserRepository {
         val name = snapshot.get<String>(NAME)
         val handicap = snapshot.get<String>(HANDICAP)
 
-        return UserProfileModel(name, handicap)
+        return UserProfileModel(name = name, handicap = handicap)
     }
 
     override suspend fun saveUserProfile(uid: String, name: String, handicap: String) {
         Firebase.firestore.collection(USERS)
             .document(uid)
-            .set(mapOf(NAME to name, HANDICAP to handicap))
+            .set(mapOf(ID to uid, NAME to name, HANDICAP to handicap))
+    }
+
+    override suspend fun getAllUsers(): List<UserProfileModel> {
+        val snapshot = Firebase.firestore.collection("users").get()
+        return snapshot.documents.mapNotNull { doc ->
+            val name = doc.get<String>(NAME) ?: return@mapNotNull null
+            val handicap = doc.get<String>(HANDICAP) ?: ""
+            val id = doc.get<String>(ID) ?: return@mapNotNull null
+            UserProfileModel(id = id, name = name, handicap = handicap)
+        }
     }
 
     companion object {
         const val NAME = "name"
         const val HANDICAP = "handicap"
         const val USERS = "users"
+        const val EMAIL = "email"
+        const val ID = "id"
     }
 }

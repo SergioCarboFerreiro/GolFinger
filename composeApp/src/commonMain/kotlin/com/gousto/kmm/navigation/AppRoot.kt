@@ -35,7 +35,7 @@ fun AppRoot() {
             startDestination = Routes.SplashScreen.route,
             modifier = Modifier.padding(padding)
         ) {
-            // 👇 Splash Screen: detecta si hay sesión activa
+
             composable(Routes.SplashScreen.route) {
                 SplashScreenComposable(
                     onUserLoggedIn = {
