@@ -73,13 +73,7 @@ fun AppRoot() {
             }
 
             composable(Routes.RegisterScreen.route) {
-                RegisterScreenComposable(
-                    onRegisterSuccess = {
-                        navController.navigate(Routes.DashboardScreen.route) {
-                            popUpTo(Routes.LoginScreen.route) { inclusive = true }
-                        }
-                    }
-                )
+                RegisterScreenComposable()
             }
 
             composable(Routes.ProfileScreen.route) {

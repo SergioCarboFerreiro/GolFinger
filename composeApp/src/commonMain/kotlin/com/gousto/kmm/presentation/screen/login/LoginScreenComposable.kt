@@ -32,7 +32,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Composable
 fun LoginScreenComposable(
     onLoginSuccess: () -> Unit,
-    onRegisterClicked: () -> Unit // 👈 nuevo parámetro
+    onRegisterClicked: () -> Unit
 ) {
     val viewModel: LoginScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()

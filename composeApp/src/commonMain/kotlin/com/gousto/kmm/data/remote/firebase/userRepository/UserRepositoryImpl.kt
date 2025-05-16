@@ -29,9 +29,9 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun getAllUsers(): List<UserProfileModel> {
         val snapshot = Firebase.firestore.collection("users").get()
         return snapshot.documents.mapNotNull { doc ->
-            val name = doc.get<String>(NAME) ?: return@mapNotNull null
-            val handicap = doc.get<String>(HANDICAP) ?: ""
-            val id = doc.get<String>(ID) ?: return@mapNotNull null
+            val name = doc.get<String>(NAME)
+            val handicap = doc.get<String>(HANDICAP)
+            val id = doc.get<String>(ID)
             UserProfileModel(id = id, name = name, handicap = handicap)
         }
     }

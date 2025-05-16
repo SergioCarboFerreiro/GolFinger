@@ -2,10 +2,13 @@ package com.gousto.kmm.presentation.screen.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gousto.kmm.domain.AuthUserUseCase
 import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import com.gousto.kmm.presentation.screen.login.state.LoginScreenUiState
+import com.gousto.kmm.presentation.screen.register.events.RegisterScreenUiEvent
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,43 +17,42 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginScreenViewModel(
-    private val loginDecorator: LoginScreenDecorator
+    private val loginDecorator: LoginScreenDecorator,
+    private val authUserUseCase : AuthUserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginScreenUiState())
     val uiState: StateFlow<LoginScreenUiState> = _uiState
 
-    private val _LoginScreen_uiEvent = MutableSharedFlow<LoginScreenUiEvent>()
-    val event = _LoginScreen_uiEvent.asSharedFlow()
+    private val _event = MutableSharedFlow<LoginScreenUiEvent>()
+    val event = _event.asSharedFlow()
 
     init {
         loadInitialState()
     }
 
     fun onLoginClicked() {
-        viewModelScope.launch {
+        viewModelScope.launch(
+            CoroutineExceptionHandler { _, error ->
+                viewModelScope.launch { handleError(error) }
+            }
+        ) {
             if (validateLogin()) {
                 val state = _uiState.value
-                try {
-                    val authResult = Firebase.auth.signInWithEmailAndPassword(
-                        email = state.username,
-                        password = state.password
-                    )
 
-                    if (authResult.user != null) {
-                        _LoginScreen_uiEvent.emit(LoginScreenUiEvent.LoginSuccess)
-                    } else {
-                        _LoginScreen_uiEvent.emit(LoginScreenUiEvent.ShowError("Usuario o contraseña incorrectos."))
-                    }
-                } catch (e: Exception) {
-                    _LoginScreen_uiEvent.emit(
-                        LoginScreenUiEvent.ShowError(
-                            e.message ?: "Ha ocurrido un error inesperado."
-                        )
-                    )
+                val authResult = authUserUseCase.authUser(
+                    email = state.username,
+                    password = state.password
+                )
+
+                if (authResult.user != null) {
+                    _event.emit(LoginScreenUiEvent.LoginSuccess)
+                } else {
+                    _event.emit(LoginScreenUiEvent.ShowError("Usuario o contraseña incorrectos."))
                 }
+
             } else {
-                _LoginScreen_uiEvent.emit(LoginScreenUiEvent.ShowError("Introduce usuario y contraseña."))
+                _event.emit(LoginScreenUiEvent.ShowError("Introduce usuario y contraseña."))
             }
         }
     }
@@ -71,6 +73,11 @@ class LoginScreenViewModel(
     private fun validateLogin(): Boolean {
         val current = _uiState.value
         return current.username.isNotBlank() && current.password.isNotBlank()
+    }
+
+    private suspend fun handleError(error: Throwable) {
+        _event.emit(LoginScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
+        _uiState.update { it.copy(isLoading = false) }
     }
 }
 

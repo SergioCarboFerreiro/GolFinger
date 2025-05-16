@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.RegisterUserUseCase
 import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
+import com.gousto.kmm.presentation.screen.register.events.RegisterScreenUiEvent
 import com.gousto.kmm.presentation.screen.register.state.RegisterScreenUiState
 
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -23,7 +24,7 @@ class RegisterScreenViewModel(
 //    •	🔄 El ViewModel vive mientras la pantalla esté en el back stack.
 //    •	🧹 Cuando navegas con popUpTo(..., inclusive = true), el ViewModel se destruye.
 //    •	📡 El SharedFlow muere con el ViewModel: no conserva los eventos tras destruirse.
-    private val _event = MutableSharedFlow<LoginScreenUiEvent>()
+    private val _event = MutableSharedFlow<RegisterScreenUiEvent>()
     val event = _event.asSharedFlow()
 
     fun onRegisterClicked() {
@@ -31,24 +32,19 @@ class RegisterScreenViewModel(
 
         viewModelScope.launch(
             CoroutineExceptionHandler { _, error ->
-                viewModelScope.launch {
-                    _event.emit(LoginScreenUiEvent.ShowError(error.message ?: "Error inesperado."))
-                }
+                viewModelScope.launch { handleError(error) }
             }
         ) {
             if (state.name.isBlank() || state.email.isBlank() || state.password.isBlank()) {
-                _event.emit(LoginScreenUiEvent.ShowError("Todos los campos excepto el handicap son obligatorios."))
+                _event.emit(RegisterScreenUiEvent.ShowError("Todos los campos excepto el handicap son obligatorios."))
                 return@launch
             }
-
             registerUserUseCase(
                 name = state.name,
                 email = state.email,
                 password = state.password,
                 handicap = state.handicap
             )
-
-            _event.emit(LoginScreenUiEvent.LoginSuccess)
         }
     }
 
@@ -66,5 +62,10 @@ class RegisterScreenViewModel(
 
     fun onHandicapChanged(value: String) {
         _uiState.update { it.copy(handicap = value) }
+    }
+
+     private suspend fun handleError(error: Throwable) {
+        _event.emit(RegisterScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
+        _uiState.update { it.copy(isLoading = false) }
     }
 }

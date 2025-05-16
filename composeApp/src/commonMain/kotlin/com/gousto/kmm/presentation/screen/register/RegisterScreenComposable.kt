@@ -23,24 +23,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
+import com.gousto.kmm.presentation.screen.register.events.RegisterScreenUiEvent
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun RegisterScreenComposable(
-    onRegisterSuccess: () -> Unit
-) {
+fun RegisterScreenComposable() {
     val viewModel: RegisterScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.event.collect { event ->
-            when (event) {
-                is LoginScreenUiEvent.LoginSuccess -> onRegisterSuccess()
-                is LoginScreenUiEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            if (event is RegisterScreenUiEvent.ShowError) {
+                snackbarHostState.showSnackbar(event.message)
             }
         }
     }

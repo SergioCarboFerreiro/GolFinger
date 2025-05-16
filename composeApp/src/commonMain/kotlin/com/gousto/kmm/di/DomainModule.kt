@@ -1,5 +1,6 @@
 package com.gousto.kmm.di
 
+import com.gousto.kmm.domain.AuthUserUseCase
 import com.gousto.kmm.domain.GetAllUsersProfileUseCase
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.domain.RegisterUserUseCase
@@ -10,4 +11,5 @@ val domainModule = module {
     factoryOf(::GetCurrentUserProfileUseCase)
     factoryOf(::RegisterUserUseCase)
     factoryOf(::GetAllUsersProfileUseCase)
+    factoryOf(::AuthUserUseCase)
 }
