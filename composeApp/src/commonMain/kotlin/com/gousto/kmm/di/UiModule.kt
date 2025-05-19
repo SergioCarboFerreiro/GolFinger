@@ -1,10 +1,12 @@
 package com.gousto.kmm.di
 
 import androidx.lifecycle.SavedStateHandle
+import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenDecorator
 import com.gousto.kmm.presentation.screen.dashboard.DashboardScreenViewModel
 import com.gousto.kmm.presentation.screen.login.LoginScreenDecorator
 import com.gousto.kmm.presentation.screen.login.LoginScreenViewModel
 import com.gousto.kmm.presentation.screen.newRound.NewRoundScreenViewModel
+import com.gousto.kmm.presentation.screen.profile.ProfileScreenDecorator
 import com.gousto.kmm.presentation.screen.profile.ProfileScreenViewModel
 import com.gousto.kmm.presentation.screen.register.RegisterScreenViewModel
 import com.gousto.kmm.presentation.screen.round.RoundScreenViewModel
@@ -20,5 +22,8 @@ val uiModule = module {
     viewModelOf(::ProfileScreenViewModel)
     viewModelOf(::NewRoundScreenViewModel)
     viewModelOf(::RoundScreenViewModel)
+
     factoryOf(::LoginScreenDecorator)
+    factoryOf(::DashboardScreenDecorator)
+    factoryOf(::ProfileScreenDecorator)
 }

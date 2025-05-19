@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileScreenViewModel(
-    private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase
+    private val profileScreenDecorator: ProfileScreenDecorator
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -35,13 +35,8 @@ class ProfileScreenViewModel(
                 viewModelScope.launch { handleError(error) }
             }
         ) {
-            val profile = getCurrentUserProfileUseCase()
-            _uiState.value = ProfileUiState(
-                name = profile?.name ?: "Desconocido",
-                email = Firebase.auth.currentUser?.email ?: "",
-                handicap = profile?.handicap ?: "N/A",
-                isLoading = false
-            )
+            //todo manejar el estado nullable en vez de lanzar una exception
+            _uiState.value = profileScreenDecorator.getProfileUiState() ?: throw Exception("Error al cargar el perfil")
         }
     }
 

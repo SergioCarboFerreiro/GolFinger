@@ -2,7 +2,6 @@ package com.gousto.kmm.presentation.screen.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.presentation.screen.dashboard.events.DashboardUiEvent
 import com.gousto.kmm.presentation.screen.dashboard.state.DashboardUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -13,12 +12,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class DashboardScreenViewModel(
-    private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase
+    private val dashboardScreenDecorator: DashboardScreenDecorator
 ) : ViewModel() {
 
 //    Usa UiState para cosas persistentes (loading, datos, errores que bloquean funcionalidad)
 //    Usa UiEvent para cosas efímeras (mensajes, navegación, errores tipo Toast/Snackbar)
-
     private val _event = MutableSharedFlow<DashboardUiEvent>()
     val event = _event.asSharedFlow()
 
@@ -38,14 +36,9 @@ class DashboardScreenViewModel(
                 }
             }
         ) {
-            val user = getCurrentUserProfileUseCase()
-            _uiState.value = DashboardUiState(
-                name = user?.name ?: "Usuario",
-                isLoading = false
-            )
+            _uiState.value = dashboardScreenDecorator.getDashboardUiState()
         }
     }
-
 
     private suspend fun handleError(error: Throwable) {
         _event.emit(DashboardUiEvent.ShowError(error.message ?: "Ha ocurrido un error inesperado"))

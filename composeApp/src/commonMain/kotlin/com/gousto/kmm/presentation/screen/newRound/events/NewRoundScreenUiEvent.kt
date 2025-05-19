@@ -7,8 +7,6 @@ sealed class NewRoundScreenUiEvent {
     data class ShowError(val message: String) : NewRoundScreenUiEvent()
 
     data class RoundCreated(
-        val sessionId: String,
-        val course: Course,
-        val players: List<UserProfileModel>
+        val sessionId: String
     ) : NewRoundScreenUiEvent()
 }

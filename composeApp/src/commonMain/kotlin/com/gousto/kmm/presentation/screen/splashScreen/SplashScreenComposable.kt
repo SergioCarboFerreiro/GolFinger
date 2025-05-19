@@ -21,7 +21,7 @@ fun SplashScreenComposable(
             onUserNotLoggedIn()
         }
     }
-
+    //todo relamente necesitamos esto?
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

@@ -99,16 +99,8 @@ fun AppRoot() {
             composable("${Routes.RoundScreen.route}/{sessionId}") { backStackEntry ->
                 val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
 
-                val courseJson = backStackEntry.savedStateHandle.get<String>("courseJson") ?: ""
-                val playersJson = backStackEntry.savedStateHandle.get<String>("playersJson") ?: ""
-
-                val course = remember { Json.decodeFromString<Course>(courseJson) }
-                val players = remember { Json.decodeFromString<List<UserProfileModel>>(playersJson) }
-
                 RoundScreenComposable(
-                    sessionId = sessionId,
-                    course = course,
-                    players = players
+                    sessionId = sessionId
                 )
             }
 

@@ -31,7 +31,6 @@ import androidx.navigation.NavHostController
 import com.gousto.kmm.navigation.Routes
 import com.gousto.kmm.presentation.screen.newRound.events.NewRoundScreenUiEvent
 import com.gousto.kmm.presentation.screen.newRound.uiState.Course
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -69,16 +68,6 @@ fun NewRoundScreenComposable(
                 }
 
                 is NewRoundScreenUiEvent.RoundCreated -> {
-                    val courseJson = Json.encodeToString(event.course)
-                    val playersJson = Json.encodeToString(event.players)
-
-                    // Guardamos los datos en la pantalla actual
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle?.set("courseJson", courseJson)
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle?.set("playersJson", playersJson)
-
-                    // Ahora sí navegamos
                     navController.navigate("${Routes.RoundScreen.route}/${event.sessionId}")
                 }
             }

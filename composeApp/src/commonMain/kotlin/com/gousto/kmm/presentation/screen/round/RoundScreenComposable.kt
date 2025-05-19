@@ -1,48 +1,56 @@
 package com.gousto.kmm.presentation.screen.round
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gousto.kmm.data.remote.firebase.userRepository.UserProfileModel
-import com.gousto.kmm.presentation.screen.newRound.uiState.Course
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun RoundScreenComposable(
-    sessionId: String,
-    course: Course,
-    players: List<UserProfileModel>
-) {
+fun RoundScreenComposable(sessionId: String) {
+    val viewModel: RoundScreenViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-        Text(
-            text = "⛳ Seguimiento de ronda",
-            style = MaterialTheme.typography.headlineSmall
-        )
+    LaunchedEffect(sessionId) {
+        viewModel.loadRound(sessionId)
+    }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Session ID: $sessionId")
-        Text("Campo: ${course.name} - ${course.type}")
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Jugadores:", style = MaterialTheme.typography.titleMedium)
-        players.forEach { player ->
-            Text("• ${player.name} (HCP: ${player.handicap})")
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
-
-        // Aquí irán los hoyos, golpes y tracking real más adelante
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+        ) {
+            Text("⛳ Seguimiento de ronda", style = MaterialTheme.typography.headlineSmall)
+            Spacer(Modifier.height(8.dp))
+            Text("Session ID: ${uiState.sessionId}")
+            Text("Campo: ${uiState.course?.name} - ${uiState.course?.type}")
+            Spacer(Modifier.height(16.dp))
+            Text("Jugadores:", style = MaterialTheme.typography.titleMedium)
+            uiState.players.forEach { player ->
+                Text("• ${player.name} (HCP: ${player.handicap})")
+            }
+        }
     }
 }

@@ -6,5 +6,6 @@ import com.gousto.kmm.presentation.screen.newRound.uiState.Course
 data class RoundScreenUiState(
     val sessionId: String = "",
     val course: Course? = null,
-    val players: List<UserProfileModel> = emptyList()
+    val players: List<UserProfileModel> = emptyList(),
+    val isLoading: Boolean = false
 )
