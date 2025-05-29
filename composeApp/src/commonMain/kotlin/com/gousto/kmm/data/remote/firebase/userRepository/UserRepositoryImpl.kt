@@ -16,8 +16,9 @@ class UserRepositoryImpl : UserRepository {
 
         val name = snapshot.get<String>(NAME)
         val handicap = snapshot.get<String>(HANDICAP)
+        val id = snapshot.get<String>(ID)
 
-        return UserProfileModel(name = name, handicap = handicap)
+        return UserProfileModel(id = id, name = name, handicap = handicap)
     }
 
     override suspend fun saveUserProfile(uid: String, name: String, handicap: String) {

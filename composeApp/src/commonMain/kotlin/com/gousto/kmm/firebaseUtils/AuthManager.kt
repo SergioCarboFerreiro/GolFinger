@@ -1,4 +1,4 @@
-package com.gousto.kmm.utils
+package com.gousto.kmm.firebaseUtils
 
 expect object AuthManager {
     fun isUserLoggedIn(): Boolean
