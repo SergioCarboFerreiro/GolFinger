@@ -17,7 +17,7 @@ class SplashScreenDecorator(
                 return SplashScreenUiState(
                     isLoading = false,
                     isLoggedIn = true,
-                    isInActiveRound = true,//always true cause sessionId is not null
+                    isInActiveRound = true,
                     sessionId = sessionId
                 )
             } ?: return SplashScreenUiState(

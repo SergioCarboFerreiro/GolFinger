@@ -33,18 +33,18 @@ class RoundScreenViewModel(
             val round = getRoundByIdUseCase.getRoundById(sessionId)
             round.let {
                 _uiState.value = RoundScreenUiState(
-                    sessionId = it.sessionId,
-                    course = it.course,
-                    players = it.players,
+                    sessionId = it?.sessionId ?: "",
+                    course = it?.course,
+                    players = it?.players ?: emptyList(),
                     isLoading = false
                 )
             }
             _uiState.update { it.copy(isLoading = false) }
+        }
     }
-}
 
-private suspend fun handleError(error: Throwable) {
-    _event.emit(RoundScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
-    _uiState.update { it.copy(isLoading = false) }
-}
+    private suspend fun handleError(error: Throwable) {
+        _event.emit(RoundScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
+        _uiState.update { it.copy(isLoading = false) }
+    }
 }

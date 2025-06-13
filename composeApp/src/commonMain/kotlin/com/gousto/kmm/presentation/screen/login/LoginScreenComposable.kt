@@ -32,6 +32,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Composable
 fun LoginScreenComposable(
     onLoginSuccess: () -> Unit,
+    onLoginSuccessAndGameStarted: (String) -> Unit,
     onRegisterClicked: () -> Unit
 ) {
     val viewModel: LoginScreenViewModel = koinViewModel()
@@ -42,6 +43,7 @@ fun LoginScreenComposable(
         viewModel.event.collect { event ->
             when (event) {
                 is LoginScreenUiEvent.LoginSuccess -> onLoginSuccess()
+                is LoginScreenUiEvent.LoginSuccessAndGameStarted -> onLoginSuccessAndGameStarted(event.sessionId)
                 is LoginScreenUiEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }

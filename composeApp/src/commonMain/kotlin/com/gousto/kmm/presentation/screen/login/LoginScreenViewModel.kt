@@ -3,6 +3,9 @@ package com.gousto.kmm.presentation.screen.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.AuthUserUseCase
+import com.gousto.kmm.domain.GetActiveCoursesByUserIdUseCase
+import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
+import com.gousto.kmm.domain.GetRoundByIdUseCase
 import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import com.gousto.kmm.presentation.screen.login.state.LoginScreenUiState
 import com.gousto.kmm.presentation.screen.register.events.RegisterScreenUiEvent
@@ -18,7 +21,9 @@ import kotlinx.coroutines.launch
 
 class LoginScreenViewModel(
     private val loginDecorator: LoginScreenDecorator,
-    private val authUserUseCase : AuthUserUseCase
+    private val authUserUseCase: AuthUserUseCase,
+    private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase,
+    private val getActiveCoursesByUserIdUseCase: GetActiveCoursesByUserIdUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginScreenUiState())
@@ -44,8 +49,15 @@ class LoginScreenViewModel(
                     email = state.username,
                     password = state.password
                 )
+                val userId = authResult.user?.uid ?: ""
+                val sessionId =
+                    getActiveCoursesByUserIdUseCase.get(
+                        userId
+                    )
 
-                if (authResult.user != null) {
+                if (authResult.user != null && sessionId != null) {
+                    _event.emit(LoginScreenUiEvent.LoginSuccessAndGameStarted(sessionId))
+                } else if (authResult.user != null) {
                     _event.emit(LoginScreenUiEvent.LoginSuccess)
                 } else {
                     _event.emit(LoginScreenUiEvent.ShowError("Usuario o contraseña incorrectos."))

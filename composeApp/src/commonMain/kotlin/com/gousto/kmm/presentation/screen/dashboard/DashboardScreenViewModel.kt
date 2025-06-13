@@ -43,5 +43,4 @@ class DashboardScreenViewModel(
     private suspend fun handleError(error: Throwable) {
         _event.emit(DashboardUiEvent.ShowError(error.message ?: "Ha ocurrido un error inesperado"))
     }
-
 }

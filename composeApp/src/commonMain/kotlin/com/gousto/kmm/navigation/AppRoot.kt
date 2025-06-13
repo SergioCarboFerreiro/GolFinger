@@ -66,6 +66,11 @@ fun AppRoot() {
                     },
                     onRegisterClicked = {
                         navController.navigate(Routes.RegisterScreen.route)
+                    },
+                    onLoginSuccessAndGameStarted = { sessionId ->
+                        navController.navigate("${Routes.RoundScreen.route}/$sessionId") {
+                            popUpTo(Routes.LoginScreen.route) { inclusive = true }
+                        }
                     }
                 )
             }

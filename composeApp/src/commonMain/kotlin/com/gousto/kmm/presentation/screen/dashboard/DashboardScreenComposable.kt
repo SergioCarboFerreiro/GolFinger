@@ -47,7 +47,6 @@ fun DashboardScreenComposable(
         }
     }
 
-    // Este padding te lo pasará AppRoot si se lo das como parámetro
     Box(
         modifier = Modifier
             .fillMaxSize()

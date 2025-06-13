@@ -18,7 +18,8 @@ class RoundRepositoryImpl : RoundRepository {
             .document(sessionId)
             .get()
 
-        return snapshot.data<RoundModel>()
+        val round = snapshot.data<RoundModel>()
+        return round
     }
 
     override suspend fun findActiveRoundForUser(userId: String): String? {

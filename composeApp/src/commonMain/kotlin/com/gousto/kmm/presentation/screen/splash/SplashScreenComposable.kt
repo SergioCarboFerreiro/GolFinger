@@ -27,17 +27,20 @@ fun SplashScreenComposable(
 
     LaunchedEffect(Unit) {
         viewModel.checkLoginAndActiveRound()
-        when {
-            state.isInActiveRound && state.sessionId != null -> {
-                onUserInRound(state.sessionId!!)
-            }
+    }
 
-            state.isLoggedIn -> {
-                onUserLoggedIn()
-            }
-
-            state.isLoggedIn.not() && state.isInActiveRound.not() -> {
-                onUserNotLoggedIn()
+    LaunchedEffect(state) {
+        if (!state.isLoading) {
+            when {
+                state.isInActiveRound && state.sessionId != null -> {
+                    onUserInRound(state.sessionId!!)
+                }
+                state.isLoggedIn -> {
+                    onUserLoggedIn()
+                }
+                else -> {
+                    onUserNotLoggedIn()
+                }
             }
         }
     }
