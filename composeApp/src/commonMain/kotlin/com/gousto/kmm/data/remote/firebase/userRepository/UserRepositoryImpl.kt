@@ -9,6 +9,7 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun getCurrentUserProfile(): UserProfileModel? {
         val uid = Firebase.auth.currentUser?.uid ?: return null
 
+        try {
         val snapshot = Firebase.firestore
             .collection(USERS)
             .document(uid)
@@ -18,7 +19,11 @@ class UserRepositoryImpl : UserRepository {
         val handicap = snapshot.get<String>(HANDICAP)
         val id = snapshot.get<String>(ID)
 
-        return UserProfileModel(id = id, name = name, handicap = handicap)
+        return UserProfileModel(id = id, name = name, handicap = handicap)}
+        catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
 
     override suspend fun saveUserProfile(uid: String, name: String, handicap: String) {

@@ -26,11 +26,11 @@ class RoundRepositoryImpl : RoundRepository {
         val rounds = Firebase.firestore.collection(ROUNDS).get()
 
         val match = rounds.documents.firstOrNull { doc ->
-            val round = doc.data<RoundModel>()          // deserializa a tu modelo
-            round.players.any { it.id == userId }       // comprueba el uid
+            val round = doc.data<RoundModel>()
+            round.players.any { it.id == userId }
         }
 
-        return match?.id                                // id del documento = sessionId
+        return match?.id
     }
 
     companion object {
