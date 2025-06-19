@@ -2,12 +2,17 @@ package com.gousto.kmm.presentation.screen.newRound
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gousto.kmm.data.remote.firebase.courseRepository.CourseModel
+import com.gousto.kmm.data.remote.firebase.courseRepository.GameModeModel
+import com.gousto.kmm.data.remote.firebase.courseRepository.HoleModel
 import com.gousto.kmm.data.remote.firebase.roundRepository.RoundModel
 import com.gousto.kmm.data.remote.firebase.userRepository.UserProfileModel
-import com.gousto.kmm.domain.GetAllUsersProfileUseCase
 import com.gousto.kmm.domain.SaveRoundUseCase
+import com.gousto.kmm.navigation.navModels.CourseNavModel
+import com.gousto.kmm.navigation.navModels.GameModeNavModel
+import com.gousto.kmm.presentation.screen.newRound.courses.uiState.CourseUiState
+import com.gousto.kmm.presentation.screen.newRound.courses.uiState.GameModeUiState
 import com.gousto.kmm.presentation.screen.newRound.events.NewRoundScreenUiEvent
-import com.gousto.kmm.presentation.screen.newRound.uiState.Course
 import com.gousto.kmm.presentation.screen.newRound.uiState.NewRoundScreenUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NewRoundScreenViewModel(
-    private val getAllUsersUseCase: GetAllUsersProfileUseCase,
+    private val newRoundScreenDecorator: NewRoundScreenDecorator,
     private val saveRoundUseCase: SaveRoundUseCase
 ) : ViewModel() {
 
@@ -32,7 +37,7 @@ class NewRoundScreenViewModel(
         fetchPlayers()
     }
 
-    fun selectCourse(course: Course) {
+    fun selectCourse(course: CourseNavModel) {
         _uiState.update { it.copy(selectedCourse = course) }
     }
 
@@ -43,10 +48,8 @@ class NewRoundScreenViewModel(
             }
         ) {
             _uiState.update { it.copy(isLoading = true) }
-            val players = getAllUsersUseCase()
-            _uiState.update {
-                it.copy(players = players, isLoading = false)
-            }
+
+            _uiState.update { newRoundScreenDecorator.getUiState() }
 
         }
     }
@@ -91,7 +94,7 @@ class NewRoundScreenViewModel(
 
     private fun saveRoundSession(
         sessionId: String,
-        course: Course,
+        course: CourseNavModel,
         players: List<UserProfileModel>
     ) {
         viewModelScope.launch(
@@ -99,13 +102,33 @@ class NewRoundScreenViewModel(
                 viewModelScope.launch { handleError(error) }
             }
         ) {
+
+            val courseModel = CourseModel(
+                name = course.name,
+                games = mapGames(course.games),
+                location = course.location,
+            )
             val roundModel = RoundModel(
                 sessionId = sessionId,
-                course = course,
+                course = courseModel,
                 players = players
             )
             saveRoundUseCase.saveRound(
                 roundModel
+            )
+        }
+    }
+
+    private fun mapGames(games: List<GameModeNavModel>): List<GameModeModel> {
+        return games.map { game ->
+            GameModeModel(
+                type = game.type,
+                holes = game.holes.map { hole ->
+                    HoleModel(
+                        number = hole.number,
+                        par = hole.par
+                    )
+                }
             )
         }
     }

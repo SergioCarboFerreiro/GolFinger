@@ -28,9 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.gousto.kmm.data.remote.firebase.courseRepository.CourseModel
 import com.gousto.kmm.navigation.Routes
+import com.gousto.kmm.navigation.navModels.CourseNavModel
+import com.gousto.kmm.presentation.screen.newRound.courses.uiState.CourseUiState
 import com.gousto.kmm.presentation.screen.newRound.events.NewRoundScreenUiEvent
-import com.gousto.kmm.presentation.screen.newRound.uiState.Course
 import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -52,7 +54,7 @@ fun NewRoundScreenComposable(
             ?.savedStateHandle
             ?.get<String>("selectedCourseJson")
             ?.let { json ->
-                val course = Json.decodeFromString<Course>(json)
+                val course = Json.decodeFromString<CourseNavModel>(json)
                 viewModel.selectCourse(course)
                 navController.currentBackStackEntry
                     ?.savedStateHandle
@@ -74,7 +76,6 @@ fun NewRoundScreenComposable(
         }
     }
 
-
     if (uiState.isLoading) {
         CircularProgressIndicator()
     } else {
@@ -90,7 +91,7 @@ fun NewRoundScreenComposable(
             OutlinedButton(onClick = onSelectCourseClicked) {
                 Text(
                     if (uiState.selectedCourse != null)
-                        "Campo: ${uiState.selectedCourse?.name} - ${uiState.selectedCourse?.type}"
+                        "Campo: ${uiState.selectedCourse!!.name} - ${uiState.selectedCourse!!.games.firstOrNull()?.type ?: "?"}"
                     else
                         "Seleccionar campo"
                 )

@@ -119,7 +119,7 @@ fun AppRoot() {
                             ?.savedStateHandle
                             ?.set("selectedCourseJson", json)
                         navController.popBackStack()
-                    }
+                    },
                 )
             }
 

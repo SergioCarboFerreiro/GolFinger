@@ -9,27 +9,40 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gousto.kmm.presentation.screen.newRound.uiState.Course
+import com.gousto.kmm.data.remote.firebase.courseRepository.CourseModel
+import com.gousto.kmm.data.remote.firebase.courseRepository.GameModeModel
+import com.gousto.kmm.navigation.navModels.CourseNavModel
+import com.gousto.kmm.navigation.navModels.GameModeNavModel
+import com.gousto.kmm.navigation.navModels.HoleNavModel
+import com.gousto.kmm.presentation.screen.newRound.NewRoundScreenViewModel
+import com.gousto.kmm.presentation.screen.newRound.courses.uiState.CourseUiState
+import com.gousto.kmm.presentation.screen.newRound.courses.uiState.GameModeUiState
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.qualifier.named
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun SelectCourseScreenComposable(
-    onCourseSelected: (Course) -> Unit
+    onCourseSelected: (CourseNavModel) -> Unit
 ) {
-    val courses = listOf("Domaio", "Mondariz")
-    val types = listOf("18 hoyos", "9 hoyos", "Pitch and Putt(16)")
+    var selectedCourse by remember { mutableStateOf<CourseNavModel?>(null) }
 
-    var selectedCourse by remember { mutableStateOf<String?>(null) }
-    var selectedType by remember { mutableStateOf<String?>(null) }
+    var selectedGameType by remember { mutableStateOf<GameModeNavModel?>(null) }
+
+
+    val viewModel: SelectCourseScreenViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Column(
         modifier = Modifier
@@ -39,20 +52,22 @@ fun SelectCourseScreenComposable(
     ) {
         Text("Seleccionar campo", style = MaterialTheme.typography.headlineSmall)
 
-        courses.forEach { course ->
-            OutlinedButton(onClick = { selectedCourse = course }) {
-                Text(course)
+        uiState.courses.forEach { course ->
+            OutlinedButton(onClick = {
+                selectedCourse = course.toNavModel()
+            }) {
+                Text(course.name)
             }
         }
 
         Spacer(Modifier.height(8.dp))
 
         selectedCourse?.let { course ->
-            Text("Tipo de campo para $course", style = MaterialTheme.typography.titleMedium)
+            Text("Tipo de juego en ${course.name}", style = MaterialTheme.typography.titleMedium)
 
-            types.forEach { type ->
-                OutlinedButton(onClick = { selectedType = type }) {
-                    Text(type)
+            course .games.forEach { gameMode ->
+                OutlinedButton(onClick = { selectedGameType = gameMode}) {
+                    Text(mapGameTypeToLabel(gameMode.type))
                 }
             }
         }
@@ -61,17 +76,49 @@ fun SelectCourseScreenComposable(
 
         Button(
             onClick = {
-                if (selectedCourse == "Domaio" && selectedType != null) {
-                    val course = Course(selectedCourse!!, selectedType!!)
-                    onCourseSelected(course) // 👈 aquí haces el callback
+                selectedCourse?.let { course ->
+                    selectedGameType?.let { game ->
+                        // Crea una nueva instancia con solo el juego seleccionado
+                        val filtered = course.copy(games = listOf(game))
+                        onCourseSelected(filtered)
+                    }
                 }
-            }
+            },
+            enabled = selectedCourse != null && selectedGameType != null
         ) {
             Text("Confirmar selección")
         }
 
-        if (selectedCourse == "Mondariz") {
-            Text("⚠️ Mondariz no está disponible todavía", color = MaterialTheme.colorScheme.error)
+        if (selectedCourse?.name == "Mondariz") {
+            Text(
+                "⚠️ Mondariz no está disponible todavía",
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
+}
+
+fun mapGameTypeToLabel(type: String): String = when (type) {
+    "standard" -> "18 Hoyos"
+    "9holes" -> "9 Hoyos"
+    "pitch_and_putt" -> "Pitch and Putt (16)"
+    else -> type
+}
+
+fun CourseUiState.toNavModel(): CourseNavModel {
+    return CourseNavModel(
+        name = name,
+        location = location,
+        games = games.map { gameMode ->
+            GameModeNavModel(
+                type = gameMode.type,
+                holes = gameMode.holes.map { hole ->
+                    HoleNavModel(
+                        number = hole.number,
+                        par = hole.par
+                    )
+                }
+            )
+        }
+    )
 }

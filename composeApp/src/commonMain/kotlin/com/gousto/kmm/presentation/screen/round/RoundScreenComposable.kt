@@ -45,7 +45,7 @@ fun RoundScreenComposable(sessionId: String) {
             Text("⛳ Seguimiento de ronda", style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.height(8.dp))
             Text("Session ID: ${uiState.sessionId}")
-            Text("Campo: ${uiState.course?.name} - ${uiState.course?.type}")
+            Text("Campo: ${uiState.course?.name} - ${uiState.course?.games?.joinToString { it.type }}")
             Spacer(Modifier.height(16.dp))
             Text("Jugadores:", style = MaterialTheme.typography.titleMedium)
             uiState.players.forEach { player ->
