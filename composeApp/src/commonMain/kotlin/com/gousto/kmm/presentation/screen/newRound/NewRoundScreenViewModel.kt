@@ -34,14 +34,10 @@ class NewRoundScreenViewModel(
     val event = _event.asSharedFlow()
 
     init {
-        fetchPlayers()
+        getNewRoundScreen()
     }
 
-    fun selectCourse(course: CourseNavModel) {
-        _uiState.update { it.copy(selectedCourse = course) }
-    }
-
-    private fun fetchPlayers() {
+    private fun getNewRoundScreen() {
         viewModelScope.launch(
             CoroutineExceptionHandler { _, error ->
                 viewModelScope.launch { handleError(error) }
@@ -65,9 +61,8 @@ class NewRoundScreenViewModel(
         }
     }
 
-    private suspend fun handleError(error: Throwable) {
-        _event.emit(NewRoundScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
-        _uiState.update { it.copy(isLoading = false) }
+    fun selectCourse(course: CourseNavModel) {
+        _uiState.update { it.copy(selectedCourse = course) }
     }
 
     fun onStartRoundClicked() {
@@ -138,5 +133,10 @@ class NewRoundScreenViewModel(
         return (1..4)
             .map { chars.random() }
             .joinToString("")
+    }
+
+    private suspend fun handleError(error: Throwable) {
+        _event.emit(NewRoundScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))
+        _uiState.update { it.copy(isLoading = false) }
     }
 }

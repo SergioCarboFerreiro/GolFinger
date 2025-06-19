@@ -30,16 +30,35 @@ class RoundScreenViewModel(
             }
         ) {
             _uiState.update { it.copy(isLoading = true) }
+
             val round = getRoundByIdUseCase.getRoundById(sessionId)
-            round.let {
-                _uiState.value = RoundScreenUiState(
-                    sessionId = it?.sessionId ?: "",
-                    course = it?.course,
-                    players = it?.players ?: emptyList(),
-                    isLoading = false
-                )
+            round?.let {
+                _uiState.update { current ->
+                    current.copy(
+                        sessionId = it.sessionId,
+                        course = it.course,
+                        players = it.players,
+                        scores = emptyMap(), // Inicializa vacío
+                        isLoading = false
+                    )
+                }
             }
-            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun updateScore(holeNumber: Int, playerId: String, strokes: String) {
+        _uiState.update { current ->
+            val updatedScores = current.scores.toMutableMap()
+            updatedScores[holeNumber to playerId] = strokes
+            current.copy(scores = updatedScores)
+        }
+    }
+
+    fun finishRound() {
+        viewModelScope.launch {
+            // Aquí puedes guardar los scores en Firestore si quieres
+            // o hacer cálculos, validar, etc.
+//            _event.emit(RoundScreenUiEvent.RoundFinished)
         }
     }
 
