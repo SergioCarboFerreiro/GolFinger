@@ -7,5 +7,6 @@ data class RoundScreenUiState(
     val sessionId: String = "",
     val course: CourseModel? = null,
     val players: List<UserProfileModel> = emptyList(),
+    val scores: Map<Pair<Int, String>, String> = emptyMap(),
     val isLoading: Boolean = false
 )
