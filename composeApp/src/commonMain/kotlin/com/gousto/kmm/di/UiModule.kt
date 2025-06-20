@@ -11,6 +11,7 @@ import com.gousto.kmm.presentation.screen.newRound.courses.SelectCourseScreenVie
 import com.gousto.kmm.presentation.screen.profile.ProfileScreenDecorator
 import com.gousto.kmm.presentation.screen.profile.ProfileScreenViewModel
 import com.gousto.kmm.presentation.screen.register.RegisterScreenViewModel
+import com.gousto.kmm.presentation.screen.round.RoundScreenDecorator
 import com.gousto.kmm.presentation.screen.round.RoundScreenViewModel
 import com.gousto.kmm.presentation.screen.splash.SplashScreenDecorator
 import com.gousto.kmm.presentation.screen.splash.SplashScreenViewModel
@@ -34,4 +35,5 @@ val uiModule = module {
     factoryOf(::SplashScreenDecorator)
     factoryOf(::NewRoundScreenDecorator)
     factoryOf(::SelectCourseScreenDecorator)
+    factoryOf(::RoundScreenDecorator)
 }
