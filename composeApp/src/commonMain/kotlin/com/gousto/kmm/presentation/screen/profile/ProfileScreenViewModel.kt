@@ -3,6 +3,7 @@ package com.gousto.kmm.presentation.screen.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
+import com.gousto.kmm.domain.SignOutUseCase
 import com.gousto.kmm.presentation.screen.profile.events.ProfileScreenUiEvent
 import com.gousto.kmm.presentation.screen.profile.uiState.ProfileUiState
 import dev.gitlive.firebase.Firebase
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileScreenViewModel(
-    private val profileScreenDecorator: ProfileScreenDecorator
+    private val profileScreenDecorator: ProfileScreenDecorator,
+    private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -37,6 +39,17 @@ class ProfileScreenViewModel(
         ) {
             //todo manejar el estado nullable en vez de lanzar una exception
             _uiState.value = profileScreenDecorator.getProfileUiState() ?: throw Exception("Error al cargar el perfil")
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch(
+            CoroutineExceptionHandler { _, error ->
+                viewModelScope.launch { handleError(error) }
+            }
+        ) {
+            signOutUseCase()
+            _event.emit(ProfileScreenUiEvent.NavigateToLoginScreen)
         }
     }
 

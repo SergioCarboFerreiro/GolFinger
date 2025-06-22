@@ -26,13 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.gousto.kmm.navigation.Routes
 import com.gousto.kmm.presentation.screen.profile.events.ProfileScreenUiEvent
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun ProfileScreenComposable() {
+fun ProfileScreenComposable(
+    navController: NavHostController
+) {
     val viewModel: ProfileScreenViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -41,6 +45,9 @@ fun ProfileScreenComposable() {
         viewModel.event.collect { event ->
             if (event is ProfileScreenUiEvent.ShowError) {
                 snackbarHostState.showSnackbar(event.message)
+            }
+            if (event is ProfileScreenUiEvent.NavigateToLoginScreen) {
+                navController.navigate(Routes.SplashScreen.route)
             }
         }
     }
@@ -78,7 +85,9 @@ fun ProfileScreenComposable() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Button({}) {
+            Button({
+                viewModel.signOut()
+            }) {
                 Text("Cerrar sesión")
             }
         }

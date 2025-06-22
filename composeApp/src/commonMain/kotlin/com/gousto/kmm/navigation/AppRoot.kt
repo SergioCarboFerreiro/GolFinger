@@ -88,7 +88,9 @@ fun AppRoot() {
             }
 
             composable(Routes.ProfileScreen.route) {
-                ProfileScreenComposable()
+                ProfileScreenComposable(
+                    navController
+                )
             }
 
             composable(Routes.NewRoundScreen.route) {

@@ -8,6 +8,7 @@ import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.domain.GetRoundByIdUseCase
 import com.gousto.kmm.domain.RegisterUserUseCase
 import com.gousto.kmm.domain.SaveRoundUseCase
+import com.gousto.kmm.domain.SignOutUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -20,4 +21,5 @@ val domainModule = module {
     factoryOf(::SaveRoundUseCase)
     factoryOf(::GetActiveCoursesByUserIdUseCase)
     factoryOf(::GetAllCoursesUseCase)
+    factoryOf(::SignOutUseCase)
 }

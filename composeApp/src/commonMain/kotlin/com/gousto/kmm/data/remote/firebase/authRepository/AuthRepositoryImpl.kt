@@ -13,4 +13,8 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun authUser(email: String, password: String): AuthResult {
         return Firebase.auth.signInWithEmailAndPassword(email, password)
     }
+
+    override suspend fun signOut() {
+        return Firebase.auth.signOut()
+    }
 }
