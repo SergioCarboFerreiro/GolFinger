@@ -16,6 +16,7 @@ import com.gousto.kmm.presentation.screen.profile.ProfileScreenComposable
 import com.gousto.kmm.presentation.screen.register.RegisterScreenComposable
 import com.gousto.kmm.presentation.screen.round.RoundScreenComposable
 import com.gousto.kmm.presentation.screen.splash.SplashScreenComposable
+import com.gousto.kmm.presentation.screen.userStats.UserStatsScreenComposable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -123,6 +124,10 @@ fun AppRoot() {
                         navController.popBackStack()
                     },
                 )
+            }
+
+            composable(Routes.UserStatsScreen.route) {
+                UserStatsScreenComposable()
             }
 
         }

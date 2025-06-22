@@ -6,6 +6,7 @@ import com.gousto.kmm.domain.GetAllCoursesUseCase
 import com.gousto.kmm.domain.GetAllUsersProfileUseCase
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.domain.GetRoundByIdUseCase
+import com.gousto.kmm.domain.GetRoundForUserUseCase
 import com.gousto.kmm.domain.RegisterUserUseCase
 import com.gousto.kmm.domain.SaveRoundUseCase
 import com.gousto.kmm.domain.SignOutUseCase
@@ -22,4 +23,5 @@ val domainModule = module {
     factoryOf(::GetActiveSessionIdByUserIdUseCase)
     factoryOf(::GetAllCoursesUseCase)
     factoryOf(::SignOutUseCase)
+    factoryOf(::GetRoundForUserUseCase)
 }

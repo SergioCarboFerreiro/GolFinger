@@ -2,6 +2,7 @@ package com.gousto.kmm.data.remote.firebase.roundRepository
 
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.firestore.where
 
 class RoundRepositoryImpl : RoundRepository {
 
@@ -34,7 +35,7 @@ class RoundRepositoryImpl : RoundRepository {
         }
     }
 
-    override suspend fun findActiveSessionIdForUser(userId: String): String? {
+    override suspend fun findRoundSessionIdForUser(userId: String): String? {
         try {
             val rounds = Firebase.firestore.collection(ROUNDS).get()
 
@@ -49,6 +50,31 @@ class RoundRepositoryImpl : RoundRepository {
             throw RuntimeException("Failed to save round: ${e.message}", e)
         }
     }
+
+    override suspend fun getAllRounds(): List<RoundModel> {
+        try {
+            val snapshot = Firebase.firestore
+                .collection("rounds")
+                .where("isFinished", true)
+                .get()
+
+            return snapshot.documents.map { doc ->
+                doc.data<RoundModel>()
+            }
+        } catch (
+            e: Exception
+        ) {
+            throw RuntimeException("Failed to get all rounds: ${e.message}", e)
+        }
+    }
+
+    override suspend fun getRoundsForUser(userId: String): List<RoundModel> {
+        return getAllRounds().filter { round ->
+            round.players.any { it.id == userId }
+        }
+    }
+
+
 
     companion object {
         const val ROUNDS = "rounds"

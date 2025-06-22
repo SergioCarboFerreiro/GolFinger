@@ -6,6 +6,6 @@ class GetActiveSessionIdByUserIdUseCase(
     private val roundRepository: RoundRepository
 ) {
     suspend fun get(userId: String): String? {
-        return roundRepository.findActiveSessionIdForUser(userId)
+        return roundRepository.findRoundSessionIdForUser(userId)
     }
 }
