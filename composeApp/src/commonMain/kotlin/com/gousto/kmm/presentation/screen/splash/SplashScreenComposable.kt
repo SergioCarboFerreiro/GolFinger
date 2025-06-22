@@ -32,7 +32,7 @@ fun SplashScreenComposable(
     LaunchedEffect(state) {
         if (!state.isLoading) {
             when {
-                state.isInActiveRound && state.sessionId != null -> {
+                !state.isInActiveRound && state.sessionId != null -> {
                     onUserInRound(state.sessionId!!)
                 }
                 state.isLoggedIn -> {

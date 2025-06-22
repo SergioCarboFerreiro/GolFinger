@@ -34,7 +34,7 @@ class RoundRepositoryImpl : RoundRepository {
         }
     }
 
-    override suspend fun findActiveRoundForUser(userId: String): String? {
+    override suspend fun findActiveSessionIdForUser(userId: String): String? {
         try {
             val rounds = Firebase.firestore.collection(ROUNDS).get()
 
