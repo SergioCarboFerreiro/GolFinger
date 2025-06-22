@@ -3,14 +3,11 @@ package com.gousto.kmm.presentation.screen.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.AuthUserUseCase
-import com.gousto.kmm.domain.GetActiveCoursesByUserIdUseCase
+import com.gousto.kmm.domain.GetActiveSessionIdByUserIdUseCase
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.domain.GetRoundByIdUseCase
 import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import com.gousto.kmm.presentation.screen.login.state.LoginScreenUiState
-import com.gousto.kmm.presentation.screen.register.events.RegisterScreenUiEvent
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +19,8 @@ import kotlinx.coroutines.launch
 class LoginScreenViewModel(
     private val loginDecorator: LoginScreenDecorator,
     private val authUserUseCase: AuthUserUseCase,
-    private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase,
-    private val getActiveCoursesByUserIdUseCase: GetActiveCoursesByUserIdUseCase
+    private val getRoundByIdUseCase: GetRoundByIdUseCase,
+    private val getActiveSessionIdByUserIdUseCase: GetActiveSessionIdByUserIdUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginScreenUiState())
@@ -51,11 +48,12 @@ class LoginScreenViewModel(
                 )
                 val userId = authResult.user?.uid ?: ""
                 val sessionId =
-                    getActiveCoursesByUserIdUseCase.get(
+                    getActiveSessionIdByUserIdUseCase.get(
                         userId
                     )
+                val round = getRoundByIdUseCase.getRoundById(sessionId ?: "")
 
-                if (authResult.user != null && sessionId != null) {
+                if (authResult.user != null && sessionId != null && round?.isFinished != true) {
                     _event.emit(LoginScreenUiEvent.LoginSuccessAndGameStarted(sessionId))
                 } else if (authResult.user != null) {
                     _event.emit(LoginScreenUiEvent.LoginSuccess)

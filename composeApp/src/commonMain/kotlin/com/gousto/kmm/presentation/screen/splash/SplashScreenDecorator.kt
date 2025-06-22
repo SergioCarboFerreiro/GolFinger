@@ -1,39 +1,40 @@
 package com.gousto.kmm.presentation.screen.splash
 
-import com.gousto.kmm.domain.GetActiveCoursesByUserIdUseCase
+import com.gousto.kmm.domain.GetActiveSessionIdByUserIdUseCase
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
+import com.gousto.kmm.domain.GetRoundByIdUseCase
 import com.gousto.kmm.presentation.screen.splash.state.SplashScreenUiState
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.auth
 
 class SplashScreenDecorator(
-    private val getActiveCoursesByUserIdUseCase: GetActiveCoursesByUserIdUseCase,
+    private val getActiveSessionIdByUserIdUseCase: GetActiveSessionIdByUserIdUseCase,
     private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase,
+    private val getRoundByIdUseCase: GetRoundByIdUseCase
 ) {
 
     suspend fun getSplashScreenUiState(): SplashScreenUiState {
-        getCurrentUserProfileUseCase()?.let { user ->
-            getActiveCoursesByUserIdUseCase.get(user.id)?.let { sessionId ->
-                return SplashScreenUiState(
-                    isLoading = false,
-                    isLoggedIn = true,
-                    isInActiveRound = true,
-                    sessionId = sessionId
-                )
-            } ?: return SplashScreenUiState(
-                isLoading = false,
-                isLoggedIn = true,
-                isInActiveRound = false,
-                sessionId = null
-            )
-
-        } ?: return SplashScreenUiState(
+        val user = getCurrentUserProfileUseCase() ?: return SplashScreenUiState(
             isLoading = false,
             isLoggedIn = false,
-            isInActiveRound = false,
+            isInActiveRound = true,
             sessionId = null
         )
 
+        val sessionId = getActiveSessionIdByUserIdUseCase.get(user.id)
+            ?: return SplashScreenUiState(
+                isLoading = false,
+                isLoggedIn = true,
+                isInActiveRound = true,
+                sessionId = null
+            )
+
+        val round = getRoundByIdUseCase.getRoundById(sessionId)
+
+        return SplashScreenUiState(
+            isLoading = false,
+            isLoggedIn = true,
+            isInActiveRound = round?.isFinished ?: true,
+            sessionId = sessionId
+        )
     }
 
 }
