@@ -105,9 +105,9 @@ fun AppRoot() {
 
             composable("${Routes.RoundScreen.route}/{sessionId}") { backStackEntry ->
                 val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
-
                 RoundScreenComposable(
-                    sessionId = sessionId
+                    sessionId = sessionId,
+                    navController = navController
                 )
             }
 

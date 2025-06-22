@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -23,7 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,19 +34,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.gousto.kmm.navigation.Routes
+import com.gousto.kmm.presentation.screen.round.events.RoundScreenUiEvent
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
 @Composable
-fun RoundScreenComposable(sessionId: String) {
+fun RoundScreenComposable(
+    navController: NavHostController,
+    sessionId: String
+) {
     val viewModel: RoundScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     var currentHoleIndex by remember { mutableStateOf(0) }
     val holes = uiState.course?.games?.firstOrNull()?.holes.orEmpty()
     val hole = holes.getOrNull(currentHoleIndex)
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(sessionId) { viewModel.loadRound(sessionId) }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is RoundScreenUiEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
+
+                is RoundScreenUiEvent.RoundFinished -> {
+                    navController.navigate(Routes.DashboardScreen.route) {
+                        popUpTo(Routes.RoundScreen.route) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
 
     if (uiState.isLoading) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -86,11 +106,27 @@ fun RoundScreenComposable(sessionId: String) {
                             Text(player.name)
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
-                                    onClick = { viewModel.updateScore(h.number, player.id, (strokes - 1).coerceAtLeast(0).toString()) }
+                                    onClick = {
+                                        viewModel.updateScore(
+                                            h.number,
+                                            player.id,
+                                            (strokes - 1).coerceAtLeast(0).toString()
+                                        )
+                                    }
                                 ) { Icon(Icons.Default.ArrowDropDown, null) }
-                                Text("$strokes", Modifier.width(32.dp), textAlign = TextAlign.Center)
+                                Text(
+                                    "$strokes",
+                                    Modifier.width(32.dp),
+                                    textAlign = TextAlign.Center
+                                )
                                 IconButton(
-                                    onClick = { viewModel.updateScore(h.number, player.id, (strokes + 1).toString()) }
+                                    onClick = {
+                                        viewModel.updateScore(
+                                            h.number,
+                                            player.id,
+                                            (strokes + 1).toString()
+                                        )
+                                    }
                                 ) { Icon(Icons.Default.KeyboardArrowUp, null) }
                             }
                         }
@@ -108,7 +144,9 @@ fun RoundScreenComposable(sessionId: String) {
             ) { Text("Anterior") }
 
             OutlinedButton(
-                onClick = { currentHoleIndex = (currentHoleIndex + 1).coerceAtMost(holes.lastIndex) },
+                onClick = {
+                    currentHoleIndex = (currentHoleIndex + 1).coerceAtMost(holes.lastIndex)
+                },
                 enabled = currentHoleIndex < holes.lastIndex
             ) { Text("Siguiente") }
         }

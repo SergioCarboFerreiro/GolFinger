@@ -6,31 +6,48 @@ import dev.gitlive.firebase.firestore.firestore
 class RoundRepositoryImpl : RoundRepository {
 
     override suspend fun saveRound(round: RoundModel) {
-        Firebase.firestore
-            .collection(ROUNDS)
-            .document(round.sessionId)
-            .set(round)
+        try {
+            Firebase.firestore
+                .collection(ROUNDS)
+                .document(round.sessionId)
+                .set(round)
+        } catch (
+            e: Exception
+        ) {
+            throw RuntimeException("Failed to save round: ${e.message}", e)
+        }
+
     }
 
     override suspend fun getRoundById(sessionId: String): RoundModel {
-        val snapshot = Firebase.firestore
-            .collection(ROUNDS)
-            .document(sessionId)
-            .get()
-
-        val round = snapshot.data<RoundModel>()
-        return round
+        try {
+            val snapshot = Firebase.firestore
+                .collection(ROUNDS)
+                .document(sessionId)
+                .get()
+            val round = snapshot.data<RoundModel>()
+            return round
+        } catch (
+            e: Exception
+        ) {
+            throw RuntimeException("Failed to save round: ${e.message}", e)
+        }
     }
 
     override suspend fun findActiveRoundForUser(userId: String): String? {
-        val rounds = Firebase.firestore.collection(ROUNDS).get()
+        try {
+            val rounds = Firebase.firestore.collection(ROUNDS).get()
 
-        val match = rounds.documents.firstOrNull { doc ->
-            val round = doc.data<RoundModel>()
-            round.players.any { it.id == userId }
+            val match = rounds.documents.firstOrNull { doc ->
+                val round = doc.data<RoundModel>()
+                round.players.any { it.id == userId }
+            }
+            return match?.id
+        } catch (
+            e: Exception
+        ) {
+            throw RuntimeException("Failed to save round: ${e.message}", e)
         }
-
-        return match?.id
     }
 
     companion object {
