@@ -2,6 +2,9 @@ package com.gousto.kmm.presentation.screen.round
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gousto.kmm.data.remote.firebase.roundRepository.RoundModel
+import com.gousto.kmm.data.remote.firebase.roundRepository.ScoreEntry
+import com.gousto.kmm.domain.SaveRoundUseCase
 import com.gousto.kmm.presentation.screen.round.events.RoundScreenUiEvent
 import com.gousto.kmm.presentation.screen.round.state.RoundScreenUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -13,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RoundScreenViewModel(
-    private val roundScreenDecorator: RoundScreenDecorator
+    private val roundScreenDecorator: RoundScreenDecorator,
+    private val saveRoundUseCase: SaveRoundUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoundScreenUiState())
@@ -44,12 +48,35 @@ class RoundScreenViewModel(
     }
 
     fun finishRound() {
-        viewModelScope.launch {
-            // Aquí puedes guardar los scores en Firestore si quieres
-            // o hacer cálculos, validar, etc.
-//            _event.emit(RoundScreenUiEvent.RoundFinished)
+        viewModelScope.launch(
+            CoroutineExceptionHandler { _, error ->
+                viewModelScope.launch { handleError(error) }
+            }
+        ) {
+            val state = _uiState.value
+
+            val round = RoundModel(
+                sessionId = state.sessionId,
+                course = state.course ?: return@launch,
+                players = state.players,
+                isFinished = true,
+                scores = mapScoresToEntries(state.scores)
+            )
+
+            saveRoundUseCase.saveRound(round)
+
+            _event.emit(RoundScreenUiEvent.RoundFinished)
         }
     }
+
+    private fun mapScoresToEntries(scores: Map<Pair<Int, String>, String>): List<ScoreEntry> =
+        scores.map { (key, value) ->
+            ScoreEntry(
+                hole = key.first,
+                playerId = key.second,
+                strokes = value
+            )
+        }
 
     private suspend fun handleError(error: Throwable) {
         _event.emit(RoundScreenUiEvent.ShowError(error.message ?: "Error al cargar el perfil"))

@@ -106,7 +106,8 @@ class NewRoundScreenViewModel(
             val roundModel = RoundModel(
                 sessionId = sessionId,
                 course = courseModel,
-                players = players
+                players = players,
+                isFinished = false
             )
             saveRoundUseCase.saveRound(
                 roundModel

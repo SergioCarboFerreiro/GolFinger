@@ -28,10 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.gousto.kmm.data.remote.firebase.courseRepository.CourseModel
 import com.gousto.kmm.navigation.Routes
 import com.gousto.kmm.navigation.navModels.CourseNavModel
-import com.gousto.kmm.presentation.screen.newRound.courses.uiState.CourseUiState
 import com.gousto.kmm.presentation.screen.newRound.events.NewRoundScreenUiEvent
 import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.koinViewModel
@@ -83,9 +81,10 @@ fun NewRoundScreenComposable(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Título y selección de campo (fijo arriba)
             Text("🏌️ Crear nueva partida", style = MaterialTheme.typography.headlineSmall)
 
             OutlinedButton(onClick = onSelectCourseClicked) {
@@ -97,13 +96,17 @@ fun NewRoundScreenComposable(
                 )
             }
 
-
             Text("Selecciona los jugadores", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
 
-            LazyColumn {
+            // Scroll solo para los jugadores
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f), // ocupa todo el espacio disponible para permitir scroll
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(uiState.players) { player ->
-                    val isSelected = uiState.selectedPlayers.contains(player.id) // o UID
+                    val isSelected = uiState.selectedPlayers.contains(player.id)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -128,8 +131,8 @@ fun NewRoundScreenComposable(
                     }
                 }
             }
-            Spacer(Modifier.weight(1f))
 
+            // Botón final (fijo abajo)
             Button(
                 onClick = { viewModel.onStartRoundClicked() },
                 enabled = uiState.selectedCourse != null && uiState.selectedPlayers.isNotEmpty(),
