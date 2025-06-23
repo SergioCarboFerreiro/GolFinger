@@ -3,8 +3,7 @@ package com.gousto.kmm.presentation.screen.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gousto.kmm.domain.AuthUserUseCase
-import com.gousto.kmm.domain.GetActiveSessionIdByUserIdUseCase
-import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
+import com.gousto.kmm.domain.GetActiveRoundSessionIdByUserIdUseCase
 import com.gousto.kmm.domain.GetRoundByIdUseCase
 import com.gousto.kmm.presentation.screen.login.events.LoginScreenUiEvent
 import com.gousto.kmm.presentation.screen.login.state.LoginScreenUiState
@@ -20,7 +19,7 @@ class LoginScreenViewModel(
     private val loginDecorator: LoginScreenDecorator,
     private val authUserUseCase: AuthUserUseCase,
     private val getRoundByIdUseCase: GetRoundByIdUseCase,
-    private val getActiveSessionIdByUserIdUseCase: GetActiveSessionIdByUserIdUseCase
+    private val getActiveRoundSessionIdByUserIdUseCase: GetActiveRoundSessionIdByUserIdUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginScreenUiState())
@@ -48,7 +47,7 @@ class LoginScreenViewModel(
                 )
                 val userId = authResult.user?.uid ?: ""
                 val sessionId =
-                    getActiveSessionIdByUserIdUseCase.get(
+                    getActiveRoundSessionIdByUserIdUseCase.get(
                         userId
                     )
                 val round = getRoundByIdUseCase.getRoundById(sessionId ?: "")

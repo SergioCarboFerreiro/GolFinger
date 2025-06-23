@@ -35,19 +35,21 @@ class RoundRepositoryImpl : RoundRepository {
         }
     }
 
-    override suspend fun findRoundSessionIdForUser(userId: String): String? {
+    override suspend fun findActiveRoundSessionIdForUser(userId: String): String? {
         try {
-            val rounds = Firebase.firestore.collection(ROUNDS).get()
+            val rounds = Firebase.firestore
+                .collection(ROUNDS)
+                .where("isFinished", false) // 👈 solo rondas activas
+                .get()
 
             val match = rounds.documents.firstOrNull { doc ->
                 val round = doc.data<RoundModel>()
                 round.players.any { it.id == userId }
             }
+
             return match?.id
-        } catch (
-            e: Exception
-        ) {
-            throw RuntimeException("Failed to save round: ${e.message}", e)
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to find active round: ${e.message}", e)
         }
     }
 
@@ -68,7 +70,7 @@ class RoundRepositoryImpl : RoundRepository {
         }
     }
 
-    override suspend fun getRoundsForUser(userId: String): List<RoundModel> {
+    override suspend fun getAllRoundsForUser(userId: String): List<RoundModel> {
         return getAllRounds().filter { round ->
             round.players.any { it.id == userId }
         }

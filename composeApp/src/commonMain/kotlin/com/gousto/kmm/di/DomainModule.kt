@@ -1,12 +1,12 @@
 package com.gousto.kmm.di
 
 import com.gousto.kmm.domain.AuthUserUseCase
-import com.gousto.kmm.domain.GetActiveSessionIdByUserIdUseCase
+import com.gousto.kmm.domain.GetActiveRoundSessionIdByUserIdUseCase
 import com.gousto.kmm.domain.GetAllCoursesUseCase
 import com.gousto.kmm.domain.GetAllUsersProfileUseCase
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
 import com.gousto.kmm.domain.GetRoundByIdUseCase
-import com.gousto.kmm.domain.GetRoundForUserUseCase
+import com.gousto.kmm.domain.GetAllRoundsForUserUseCase
 import com.gousto.kmm.domain.RegisterUserUseCase
 import com.gousto.kmm.domain.SaveRoundUseCase
 import com.gousto.kmm.domain.SignOutUseCase
@@ -20,8 +20,8 @@ val domainModule = module {
     factoryOf(::AuthUserUseCase)
     factoryOf(::GetRoundByIdUseCase)
     factoryOf(::SaveRoundUseCase)
-    factoryOf(::GetActiveSessionIdByUserIdUseCase)
+    factoryOf(::GetActiveRoundSessionIdByUserIdUseCase)
     factoryOf(::GetAllCoursesUseCase)
     factoryOf(::SignOutUseCase)
-    factoryOf(::GetRoundForUserUseCase)
+    factoryOf(::GetAllRoundsForUserUseCase)
 }

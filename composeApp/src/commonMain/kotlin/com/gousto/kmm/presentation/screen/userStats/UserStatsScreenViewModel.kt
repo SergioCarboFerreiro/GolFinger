@@ -2,9 +2,7 @@ package com.gousto.kmm.presentation.screen.userStats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gousto.kmm.domain.AuthUserUseCase
 import com.gousto.kmm.domain.GetCurrentUserProfileUseCase
-import com.gousto.kmm.presentation.screen.splash.events.SplashScreenUiEvent
 import com.gousto.kmm.presentation.screen.userStats.events.UserStatsScreenUiEvent
 import com.gousto.kmm.presentation.screen.userStats.state.UserStatsScreenUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
