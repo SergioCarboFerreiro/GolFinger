@@ -59,7 +59,7 @@ fun NewRoundScreenComposable(
                     ?.remove<String>("selectedCourseJson")
             }
     }
-// Maneja eventos como navegación y errores
+    // Maneja eventos como navegación y errores
     LaunchedEffect(Unit) {
         viewModel.event.collect { event ->
             when (event) {

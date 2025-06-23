@@ -7,20 +7,16 @@ import com.gousto.kmm.presentation.screen.round.state.RoundScreenUiState
 
 class RoundScreenDecorator(
     private val getRoundByIdUseCase: GetRoundByIdUseCase,
-    private val getAllCoursesUseCase: GetAllCoursesUseCase
 ) {
 
     suspend fun getRoundById(sessionId: String): RoundScreenUiState? {
         val round = getRoundByIdUseCase.getRoundById(sessionId) ?: return null
 
-        val allCourses = getAllCoursesUseCase()
-        val matchingCourse = allCourses.find { it.name == round.course.name }
         val scoreMap = round.scores.toScoreMap()
-
 
         return RoundScreenUiState(
             sessionId = round.sessionId,
-            course = matchingCourse ?: round.course,
+            course = round.course,
             players = round.players,
             scores = scoreMap,
             isLoading = false

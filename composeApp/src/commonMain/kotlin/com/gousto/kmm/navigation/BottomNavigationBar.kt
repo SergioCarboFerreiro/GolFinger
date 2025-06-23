@@ -3,6 +3,7 @@ package com.gousto.kmm.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -25,11 +26,11 @@ fun BottomNavigationBar(navController: NavHostController) {
             label = "Profile",
             icon = Icons.Default.Face
         ),
-//        BottomNavItem(
-//            route = Routes.Profile.route,
-//            label = "Perfil",
-//            icon = Icons.Default.Person
-//        )
+        BottomNavItem(
+            route = Routes.UserStatsScreen.route,
+            label = "User Stats",
+            icon = Icons.Default.Person
+        )
     )
 
     val currentDestination = navController

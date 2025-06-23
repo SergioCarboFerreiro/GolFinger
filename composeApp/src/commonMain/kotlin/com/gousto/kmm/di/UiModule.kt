@@ -15,6 +15,8 @@ import com.gousto.kmm.presentation.screen.round.RoundScreenDecorator
 import com.gousto.kmm.presentation.screen.round.RoundScreenViewModel
 import com.gousto.kmm.presentation.screen.splash.SplashScreenDecorator
 import com.gousto.kmm.presentation.screen.splash.SplashScreenViewModel
+import com.gousto.kmm.presentation.screen.userStats.UserStatsScreenDecorator
+import com.gousto.kmm.presentation.screen.userStats.UserStatsScreenViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -28,6 +30,7 @@ val uiModule = module {
     viewModelOf(::RoundScreenViewModel)
     viewModelOf(::SplashScreenViewModel)
     viewModelOf(::SelectCourseScreenViewModel)
+    viewModelOf(::UserStatsScreenViewModel)
 
     factoryOf(::LoginScreenDecorator)
     factoryOf(::DashboardScreenDecorator)
@@ -36,4 +39,5 @@ val uiModule = module {
     factoryOf(::NewRoundScreenDecorator)
     factoryOf(::SelectCourseScreenDecorator)
     factoryOf(::RoundScreenDecorator)
+    factoryOf(::UserStatsScreenDecorator)
 }
