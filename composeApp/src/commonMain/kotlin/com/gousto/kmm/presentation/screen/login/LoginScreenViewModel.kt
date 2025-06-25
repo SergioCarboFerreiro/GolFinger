@@ -2,6 +2,7 @@ package com.gousto.kmm.presentation.screen.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gousto.kmm.data.remote.firebase.roundRepository.RoundModel
 import com.gousto.kmm.domain.AuthUserUseCase
 import com.gousto.kmm.domain.GetActiveRoundSessionIdByUserIdUseCase
 import com.gousto.kmm.domain.GetRoundByIdUseCase
@@ -38,30 +39,34 @@ class LoginScreenViewModel(
                 viewModelScope.launch { handleError(error) }
             }
         ) {
-            if (validateLogin()) {
-                val state = _uiState.value
-
-                val authResult = authUserUseCase.authUser(
-                    email = state.username,
-                    password = state.password
-                )
-                val userId = authResult.user?.uid ?: ""
-                val sessionId =
-                    getActiveRoundSessionIdByUserIdUseCase.get(
-                        userId
-                    )
-                val round = getRoundByIdUseCase.getRoundById(sessionId ?: "")
-
-                if (authResult.user != null && sessionId != null && round?.isFinished != true) {
-                    _event.emit(LoginScreenUiEvent.LoginSuccessAndGameStarted(sessionId))
-                } else if (authResult.user != null) {
-                    _event.emit(LoginScreenUiEvent.LoginSuccess)
-                } else {
-                    _event.emit(LoginScreenUiEvent.ShowError("Usuario o contraseña incorrectos."))
-                }
-
-            } else {
+            if (!validateLogin()) {
                 _event.emit(LoginScreenUiEvent.ShowError("Introduce usuario y contraseña."))
+                return@launch
+            }
+
+            val state = _uiState.value
+
+            val authResult = authUserUseCase.authUser(
+                email = state.username,
+                password = state.password
+            )
+
+            val user = authResult.user
+            if (user == null) {
+                _event.emit(LoginScreenUiEvent.ShowError("Usuario o contraseña incorrectos."))
+                return@launch
+            }
+
+            val sessionId = getActiveRoundSessionIdByUserIdUseCase.get(user.uid)
+            val round = sessionId?.let { getRoundByIdUseCase.getRoundById(it) }
+
+            when {
+                sessionId != null && round?.isFinished == false -> {
+                    _event.emit(LoginScreenUiEvent.LoginSuccessAndGameStarted(sessionId))
+                }
+                else -> {
+                    _event.emit(LoginScreenUiEvent.LoginSuccess)
+                }
             }
         }
     }
