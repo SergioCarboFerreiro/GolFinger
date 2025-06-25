@@ -4,12 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,30 +18,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gousto.kmm.data.remote.firebase.courseRepository.CourseModel
-import com.gousto.kmm.data.remote.firebase.courseRepository.GameModeModel
 import com.gousto.kmm.navigation.navModels.CourseNavModel
 import com.gousto.kmm.navigation.navModels.GameModeNavModel
 import com.gousto.kmm.navigation.navModels.HoleNavModel
-import com.gousto.kmm.presentation.screen.newRound.NewRoundScreenViewModel
 import com.gousto.kmm.presentation.screen.newRound.courses.uiState.CourseUiState
-import com.gousto.kmm.presentation.screen.newRound.courses.uiState.GameModeUiState
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.core.qualifier.named
 
 @Composable
 fun SelectCourseScreenComposable(
     onCourseSelected: (CourseNavModel) -> Unit
 ) {
     var selectedCourse by remember { mutableStateOf<CourseNavModel?>(null) }
-
     var selectedGameType by remember { mutableStateOf<GameModeNavModel?>(null) }
-
 
     val viewModel: SelectCourseScreenViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     Column(
         modifier = Modifier
@@ -53,22 +43,25 @@ fun SelectCourseScreenComposable(
         Text("Seleccionar campo", style = MaterialTheme.typography.headlineSmall)
 
         uiState.courses.forEach { course ->
-            OutlinedButton(onClick = {
-                selectedCourse = course.toNavModel()
-            }) {
-                Text(course.name)
-            }
+            val isSelected = selectedCourse?.name == course.name
+            SelectableCardComposableCard(
+                text = course.name,
+                isSelected = isSelected,
+                onClick = { selectedCourse = course.toNavModel() }
+            )
         }
 
-        Spacer(Modifier.height(8.dp))
-
         selectedCourse?.let { course ->
+            Spacer(Modifier.height(16.dp))
             Text("Tipo de juego en ${course.name}", style = MaterialTheme.typography.titleMedium)
 
-            course .games.forEach { gameMode ->
-                OutlinedButton(onClick = { selectedGameType = gameMode}) {
-                    Text(mapGameTypeToLabel(gameMode.type))
-                }
+            course.games.forEach { gameMode ->
+                val isGameSelected = selectedGameType?.type == gameMode.type
+                SelectableCardComposableCard(
+                    text = mapGameTypeToLabel(gameMode.type),
+                    isSelected = isGameSelected,
+                    onClick = { selectedGameType = gameMode }
+                )
             }
         }
 
@@ -78,13 +71,13 @@ fun SelectCourseScreenComposable(
             onClick = {
                 selectedCourse?.let { course ->
                     selectedGameType?.let { game ->
-                        // Crea una nueva instancia con solo el juego seleccionado
                         val filtered = course.copy(games = listOf(game))
                         onCourseSelected(filtered)
                     }
                 }
             },
-            enabled = selectedCourse != null && selectedGameType != null
+            enabled = selectedCourse != null && selectedGameType != null,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Confirmar selección")
         }
