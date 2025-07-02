@@ -38,6 +38,9 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.core.splashscreen)
+            implementation(libs.play.services.maps)
+            implementation(libs.play.services.location)
+            implementation(libs.maps.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
