@@ -7,9 +7,6 @@ import com.gousto.kmm.data.remote.firebase.roundRepository.ScoreEntry
 import com.gousto.kmm.domain.SaveRoundUseCase
 import com.gousto.kmm.presentation.screen.round.events.RoundScreenUiEvent
 import com.gousto.kmm.presentation.screen.round.state.RoundScreenUiState
-import com.gousto.kmm.location.GeoPoint
-import com.gousto.kmm.location.LocationService
-import com.gousto.kmm.location.haversine
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +17,7 @@ import kotlinx.coroutines.launch
 
 class RoundScreenViewModel(
     private val roundScreenDecorator: RoundScreenDecorator,
-    private val saveRoundUseCase: SaveRoundUseCase,
-    private val locationService: LocationService
+    private val saveRoundUseCase: SaveRoundUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoundScreenUiState())
@@ -48,23 +44,6 @@ class RoundScreenViewModel(
             val updatedScores = current.scores.toMutableMap()
             updatedScores[holeNumber to playerId] = strokes
             current.copy(scores = updatedScores)
-        }
-    }
-
-    fun measureShot() {
-        viewModelScope.launch(
-            CoroutineExceptionHandler { _, error ->
-                viewModelScope.launch { handleError(error) }
-            }
-        ) {
-            val location = locationService.getLocation()
-            val current = _uiState.value
-            if (current.startLocation == null) {
-                _uiState.update { it.copy(startLocation = location, endLocation = null, shotDistanceMeters = null) }
-            } else {
-                val distance = haversine(current.startLocation, location)
-                _uiState.update { it.copy(endLocation = location, shotDistanceMeters = distance) }
-            }
         }
     }
 

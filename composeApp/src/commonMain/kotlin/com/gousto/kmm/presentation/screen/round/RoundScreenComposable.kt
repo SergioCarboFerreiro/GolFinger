@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.gousto.kmm.navigation.Routes
 import com.gousto.kmm.presentation.screen.round.events.RoundScreenUiEvent
-import com.gousto.kmm.location.MapViewComposable
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -133,15 +132,6 @@ fun RoundScreenComposable(
                         }
                         Spacer(Modifier.height(8.dp))
                     }
-                    uiState.shotDistanceMeters?.let {
-                        Text("Distancia: ${'${'}it.toInt()} m")
-                    }
-                    MapViewComposable(uiState.startLocation, uiState.endLocation)
-                    Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = { viewModel.measureShot() },
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text("Medir disparo") }
                 }
             }
         }

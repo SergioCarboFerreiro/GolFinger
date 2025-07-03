@@ -37,10 +37,6 @@ composeWebviewMultiplatform = "1.9.20"
 
 firebase-kmp = "1.8.0"
 
-playServicesLocation = "21.2.0"
-playServicesMaps = "18.2.0"
-mapsCompose = "2.11.4"
-
 voyagerVersion = "1.1.0-beta02"
 
 [libraries]
@@ -104,11 +100,6 @@ compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-kmp" }
 firebase-database = { module = "dev.gitlive:firebase-database", version.ref = "firebase-kmp" }
 firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-kmp" }
-
-# Maps
-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 
 
 #// Multiplatform
