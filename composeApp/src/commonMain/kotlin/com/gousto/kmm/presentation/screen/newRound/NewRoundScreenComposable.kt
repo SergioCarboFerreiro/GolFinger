@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
@@ -39,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.ArrowBack
+import com.gousto.kmm.util.isIOS
 import androidx.navigation.NavHostController
 import com.gousto.kmm.navigation.Routes
 import com.gousto.kmm.navigation.navModels.CourseNavModel
@@ -96,6 +99,12 @@ fun NewRoundScreenComposable(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (isIOS) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             // Título y selección de campo (fijo arriba)
             Text("🏌️ Crear nueva partida", style = MaterialTheme.typography.headlineSmall)
 

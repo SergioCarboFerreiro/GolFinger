@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.ArrowBack
+import com.gousto.kmm.util.isIOS
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,7 +30,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SelectCourseScreenComposable(
-    onCourseSelected: (CourseNavModel) -> Unit
+    onCourseSelected: (CourseNavModel) -> Unit,
+    onBack: () -> Unit
 ) {
     var selectedCourse by remember { mutableStateOf<CourseNavModel?>(null) }
     var selectedGameType by remember { mutableStateOf<GameModeNavModel?>(null) }
@@ -40,6 +45,12 @@ fun SelectCourseScreenComposable(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (isIOS) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
         Text("Seleccionar campo", style = MaterialTheme.typography.headlineSmall)
 
         uiState.courses.forEach { course ->
