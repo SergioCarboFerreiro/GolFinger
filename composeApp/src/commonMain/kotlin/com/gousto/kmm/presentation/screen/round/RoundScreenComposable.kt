@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.ArrowBack
+import com.gousto.kmm.util.isIOS
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,6 +84,12 @@ fun RoundScreenComposable(
         Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        if (isIOS) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+            Spacer(Modifier.height(8.dp))
+        }
         // Información de la ronda
         Column {
             Text("🏌 Seguimiento de ronda", style = MaterialTheme.typography.headlineSmall)

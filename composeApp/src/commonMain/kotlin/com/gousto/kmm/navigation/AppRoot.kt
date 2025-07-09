@@ -85,7 +85,7 @@ fun AppRoot() {
             }
 
             composable(Routes.RegisterScreen.route) {
-                RegisterScreenComposable()
+                RegisterScreenComposable(navController)
             }
 
             composable(Routes.ProfileScreen.route) {
@@ -123,6 +123,7 @@ fun AppRoot() {
                             ?.set("selectedCourseJson", json)
                         navController.popBackStack()
                     },
+                    onBack = { navController.popBackStack() }
                 )
             }
 
@@ -131,5 +132,4 @@ fun AppRoot() {
             }
 
         }
-    }
-}
+    }}
